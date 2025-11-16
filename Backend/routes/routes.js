@@ -1,29 +1,25 @@
 import express from "express";
+import {
+  addCustomer,
+  deleteCustomer,
+  editCustomer,
+  getAllCustomers,
+  getCustomer,
+  getDashboard,
+} from "../controllers/controller.js";
 
 const router = express.Router();
 
-router.get("/dashboard", (req, res) => {
-  res.status(200).send("Dashboard Loaded succesfully");
-});
+router.get("/dashboard", getDashboard);
 
-router.get("/customers", (req, res) => {
-  res.status(200).send("Customers loaded successfully");
-});
+router.get("/customers", getAllCustomers);
 
-router.get("/customers/:id", (req, res) => {
-  res.status(200).send("customers  details");
-});
+router.get("/customers/:id", getCustomer);
 
-router.post("/customers", (req, res) => {
-  res.status(201).send("New customer added succesfully");
-});
+router.post("/customers", addCustomer);
 
-router.put("/customers/:id", (req, res) => {
-  res.status(200).send("edit customer added succesfully");
-});
+router.put("/customers/:id", editCustomer);
 
-router.delete("/api/customers/:id", (req, res) => {
-  res.status(200).send("customer deleted succesfully");
-});
+router.delete("/api/customers/:id", deleteCustomer);
 
 export default router;
