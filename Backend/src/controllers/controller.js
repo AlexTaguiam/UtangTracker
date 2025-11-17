@@ -1,6 +1,6 @@
 import Customer from "../models/customer.js";
 
-export const getDashboard = async (req, res) => {
+export const getDashboard = async (_, res) => {
   try {
     const totalCustomer = await Customer.countDocuments();
     const customers = await Customer.find();
@@ -29,7 +29,7 @@ export const getDashboard = async (req, res) => {
   }
 };
 
-export const getAllCustomers = async (req, res) => {
+export const getAllCustomers = async (_, res) => {
   try {
     const allCustomers = await Customer.find();
     res.status(200).json(allCustomers);
@@ -38,8 +38,35 @@ export const getAllCustomers = async (req, res) => {
   }
 };
 
-export const getCustomer = (req, res) => {
-  res.status(200).send("Customer Viewed Successfully");
+export const getCustomer = async (req, res) => {
+  try {
+    const customerId = req.params.id;
+    const customer = await Customer.findById(customerId);
+
+    if (!customer) {
+      return res.status(404).json({ error: "Customer not found" });
+    }
+
+    let customerTotalPaid = 0;
+    let customerTotalUnpaid = 0;
+
+    customer.history.forEach((utang) => {
+      if (utang.status === "paid") {
+        customerTotalPaid += utang.total;
+      } else if (utang.status === "unpaid") {
+        customerTotalUnpaid += utang.total;
+      }
+    });
+
+    res.status(200).json({
+      name: customer.name,
+      customerTotalPaid,
+      customerTotalUnpaid,
+      history: customer.history,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" + error.message });
+  }
 };
 
 export const addCustomer = async (req, res) => {
