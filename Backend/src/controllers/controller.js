@@ -1,5 +1,6 @@
+import customer from "../models/customer.js";
 import Customer from "../models/customer.js";
-
+//Load the Dashboard
 export const getDashboard = async (_, res) => {
   try {
     const totalCustomer = await Customer.countDocuments();
@@ -29,15 +30,36 @@ export const getDashboard = async (_, res) => {
   }
 };
 
+//Load all the Customer
 export const getAllCustomers = async (_, res) => {
   try {
     const allCustomers = await Customer.find();
-    res.status(200).json(allCustomers);
+
+    const formatted = allCustomers.map((customer) => {
+      let totalPaid = 0;
+      let totalUnpaid = 0;
+
+      customer.history.forEach((utang) => {
+        if (utang.status === "paid") {
+          totalPaid += utang.total;
+        } else {
+          totalUnpaid += utang.total;
+        }
+      });
+      return {
+        name: customer.name,
+        totalPaid,
+        totalUnpaid,
+      };
+    });
+
+    res.status(200).json({ formatted });
   } catch (error) {
     res.status(500).json({ error: "Server error" + error.message });
   }
 };
 
+//Load a specific customer based on ID
 export const getCustomer = async (req, res) => {
   try {
     const customerId = req.params.id;
@@ -69,6 +91,7 @@ export const getCustomer = async (req, res) => {
   }
 };
 
+//Add a new Customer
 export const addCustomer = async (req, res) => {
   try {
     const { name, product, amount, price } = req.body;
@@ -115,6 +138,7 @@ export const editCustomer = (req, res) => {
   res.status(200).send("edit customer added succesfully");
 };
 
+//Delete a Customer
 export const deleteCustomer = (req, res) => {
   h;
   res.status(200).send("customer deleted succesfully");
