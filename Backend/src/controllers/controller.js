@@ -1,11 +1,41 @@
 import Customer from "../models/customer.js";
 
-export const getDashboard = (req, res) => {
-  res.status(200).send("Dashboard Loaded succesfully");
+export const getDashboard = async (req, res) => {
+  try {
+    const totalCustomer = await Customer.countDocuments();
+    const customers = await Customer.find();
+
+    let totalPaid = 0;
+    let totalUnpaid = 0;
+
+    customers.forEach((customer) => {
+      customer.history.forEach((entry) => {
+        if (entry.status === "paid") {
+          totalPaid += entry.total;
+        } else if (entry.status === "unpaid") {
+          totalUnpaid += entry.total;
+        }
+      });
+    });
+
+    res.status(200).json({
+      totalCustomer,
+      totalPaid,
+      totalUnpaid,
+    });
+  } catch (error) {
+    console.error("Dashboard error:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
 };
 
-export const getAllCustomers = (req, res) => {
-  res.status(200).send("Customers loaded successfully");
+export const getAllCustomers = async (req, res) => {
+  try {
+    const allCustomers = await Customer.find();
+    res.status(200).json(allCustomers);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" + error.message });
+  }
 };
 
 export const getCustomer = (req, res) => {
