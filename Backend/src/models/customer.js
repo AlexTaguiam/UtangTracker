@@ -6,7 +6,7 @@ const utangSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   total: { type: Number, required: true },
   date: { type: Date, default: Date.now },
-  status: { typeof: String, enum: ["unpaid", "paid"], default: "unpaid" },
+  status: { type: String, enum: ["unpaid", "paid"], default: "unpaid" },
 });
 
 const customerSchema = new mongoose.Schema({
