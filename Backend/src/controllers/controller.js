@@ -139,7 +139,38 @@ export const editCustomer = (req, res) => {
 };
 
 //Delete a Customer
-export const deleteCustomer = (req, res) => {
-  h;
-  res.status(200).send("customer deleted succesfully");
+export const deleteCustomer = async (req, res) => {
+  try {
+    const customerId = req.params.id;
+    const deletedCUstomer = await Customer.findByIdAndDelete(customerId);
+
+    res.status(200).json({
+      message: `Customer with ${customerId} is succesfully deleted`,
+      deletedCUstomer,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" + error.message });
+  }
+};
+
+export const deleteUtang = async (req, res) => {
+  try {
+    const { customerId, utangId } = req.params;
+
+    const result = await Customer.findByIdAndUpdate(
+      customerId,
+      { $pull: { history: { _id: utangId } } },
+      { new: true }
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: "Customer not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "utang deleted successfully", customer: result });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" + error.message });
+  }
 };

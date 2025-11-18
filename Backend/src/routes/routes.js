@@ -2,6 +2,7 @@ import express from "express";
 import {
   addCustomer,
   deleteCustomer,
+  deleteUtang,
   editCustomer,
   getAllCustomers,
   getCustomer,
@@ -20,6 +21,8 @@ router.post("/customers", addCustomer);
 
 router.put("/customers/:id", editCustomer);
 
-router.delete("/api/customers/:id", deleteCustomer);
+router.delete("/customers/:id", deleteCustomer);
+
+router.delete("/customers/:customerId/utang/:utangId", deleteUtang);
 
 export default router;
