@@ -1,7 +1,7 @@
 import express from "express";
 import router from "./routes/routes.js";
 import { connectDB } from "./config/db.js";
-import { apiLimiter } from "../middlewares/rateLimiter.js";
+import { apiLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
 const PORT = 3000;

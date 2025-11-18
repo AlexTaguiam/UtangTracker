@@ -134,8 +134,36 @@ export const addCustomer = async (req, res) => {
   }
 };
 
-export const editCustomer = (req, res) => {
-  res.status(200).send("edit customer added succesfully");
+export const updateUtangStatus = async (req, res) => {
+  try {
+    const { customerId, utangId } = req.params;
+    const { status } = req.body;
+
+    if (!["paid", "unpaid"].includes(status)) {
+      return res.status(404).json({ error: "Invalid status value" });
+    }
+
+    const customer = await Customer.findById(customerId);
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    const utang = customer.history.id(utangId);
+    if (!utang) {
+      return res.status(404).json({ message: "Utang record not found" });
+    }
+
+    utang.status = status;
+
+    await customer.save();
+
+    res.status(200).json({
+      message: `utang status updated to ${status}`,
+      updatedUtang: utang,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" + error.message });
+  }
 };
 
 //Delete a Customer

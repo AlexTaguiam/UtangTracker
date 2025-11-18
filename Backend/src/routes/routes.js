@@ -3,10 +3,10 @@ import {
   addCustomer,
   deleteCustomer,
   deleteUtang,
-  editCustomer,
   getAllCustomers,
   getCustomer,
   getDashboard,
+  updateUtangStatus,
 } from "../controllers/controller.js";
 
 const router = express.Router();
@@ -19,7 +19,7 @@ router.get("/customers/:id", getCustomer);
 
 router.post("/customers", addCustomer);
 
-router.put("/customers/:id", editCustomer);
+router.put("/customers/:customerId/utang/:utangId", updateUtangStatus);
 
 router.delete("/customers/:id", deleteCustomer);
 
