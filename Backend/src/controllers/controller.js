@@ -153,6 +153,7 @@ export const deleteCustomer = async (req, res) => {
   }
 };
 
+//Delete a utang based on a customer history
 export const deleteUtang = async (req, res) => {
   try {
     const { customerId, utangId } = req.params;
