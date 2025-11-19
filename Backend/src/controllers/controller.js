@@ -166,6 +166,16 @@ export const updateUtangStatus = async (req, res) => {
   }
 };
 
+export const updateUtangDetails = async (req, res) => {
+  try {
+    res.status(200).json({
+      message: "Gumagana naman",
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Ayaw Talaga gumana kol" + error.message });
+  }
+};
+
 //Delete a Customer
 export const deleteCustomer = async (req, res) => {
   try {
