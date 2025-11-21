@@ -1,17 +1,28 @@
 import mongoose, { Schema } from "mongoose";
 
-const utangSchema = new mongoose.Schema({
+const productSchema = new mongoose.Schema({
   product: { type: String, required: true },
   amount: { type: Number, required: true },
   price: { type: Number, required: true },
   total: { type: Number, required: true },
+});
+
+const transactionSchema = new mongoose.Schema({
+  products: [productSchema],
+  totalAmount: { type: Number, required: true },
+  paidAmount: { type: Number, default: 0 },
+  remainingBalance: { type: Number, required: true },
+  status: {
+    type: String,
+    enum: ["unpaid", "partial", "paid"],
+    default: "unpaid",
+  },
   date: { type: Date, default: Date.now },
-  status: { type: String, enum: ["unpaid", "paid"], default: "unpaid" },
 });
 
 const customerSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
-  history: [utangSchema],
+  history: [transactionSchema],
 });
 
 export default mongoose.model("Customer", customerSchema);

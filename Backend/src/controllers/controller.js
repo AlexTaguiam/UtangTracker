@@ -62,7 +62,7 @@ export const getAllCustomers = async (_, res) => {
 //Load a specific customer based on ID
 export const getCustomer = async (req, res) => {
   try {
-    const customerId = req.params.id;
+    const customerId = req.params.customerId;
     const customer = await Customer.findById(customerId);
 
     if (!customer) {
@@ -208,12 +208,18 @@ export const updateUtangDetails = async (req, res) => {
 //Delete a Customer
 export const deleteCustomer = async (req, res) => {
   try {
-    const customerId = req.params.id;
-    const deletedCUstomer = await Customer.findByIdAndDelete(customerId);
+    const customerId = req.params.customerId;
+    console.log("Customer ID:", customerId);
+
+    const deletedCustomer = await Customer.findByIdAndDelete(customerId);
+
+    if (!deletedCustomer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
 
     res.status(200).json({
       message: `Customer with ${customerId} is succesfully deleted`,
-      deletedCUstomer,
+      deletedCustomer: deletedCustomer,
     });
   } catch (error) {
     res.status(500).json({ error: "Server error" + error.message });

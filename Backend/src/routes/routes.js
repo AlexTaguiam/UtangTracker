@@ -22,6 +22,6 @@ router.put("/customers/:customerId/utang/:utangId/status", updateUtangStatus);
 router.put("/customers/:customerId/utang/:utangId/details", updateUtangDetails);
 router.delete("/customers/:customerId/utang/:utangId", deleteUtang);
 
-router.delete("/customers/:customer", deleteCustomer);
+router.delete("/customers/:customerId", deleteCustomer);
 
 export default router;
