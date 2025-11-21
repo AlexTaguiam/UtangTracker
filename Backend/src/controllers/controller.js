@@ -168,11 +168,40 @@ export const updateUtangStatus = async (req, res) => {
 
 export const updateUtangDetails = async (req, res) => {
   try {
+    const { customerId, utangId } = req.params;
+    const { product, price, amount, date, status } = req.body;
+
+    const total = price * amount;
+
+    if (!["paid", "unpaid"].includes(status)) {
+      return res.status(404).json({ error: "Invalid Status Value" });
+    }
+
+    const customer = await Customer.findById(customerId);
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    const utang = customer.history.id(utangId);
+    if (!utang) {
+      return res.status(404).json({ message: "Utang Record not found" });
+    }
+
+    utang.product = product;
+    utang.price = price;
+    utang.amount = amount;
+    utang.total = total;
+    utang.date = date;
+    utang.status = status;
+
+    await customer.save();
+
     res.status(200).json({
-      message: "Gumagana naman",
+      message: `utang details updated`,
+      updatedDetails: utang,
     });
   } catch (error) {
-    res.status(500).json({ error: "Ayaw Talaga gumana kol" + error.message });
+    res.status(500).json({ error: "Server error" + error.message });
   }
 };
 
