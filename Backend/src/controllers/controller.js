@@ -94,15 +94,40 @@ export const getCustomer = async (req, res) => {
 //Add a new Customer
 export const addCustomer = async (req, res) => {
   try {
-    const { name, product, amount, price } = req.body;
-    const total = amount * price;
+    const { name, products } = req.body;
+
+    if (!name || !Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({ error: "Name and products are required" });
+    }
+
+    for (const item of products) {
+      if (!item.product || !item.quantity || !item.price) {
+        return res.status(400).json({
+          error: "Each product must include product name, quantity and price",
+        });
+      }
+    }
+
+    const productsWithTotal = products.map((item) => ({
+      ...item,
+      total: item.price * item.quantity,
+    }));
+
+    const totalAmount = productsWithTotal.reduce(
+      (sum, item) => sum + item.total,
+      0
+    );
+
+    const paidAmount = 0;
+    const remainingBalance = totalAmount;
+    const status = "unpaid";
 
     const newUtang = {
-      product,
-      amount,
-      price,
-      total,
-      status: "unpaid",
+      products: productsWithTotal,
+      totalAmount,
+      paidAmount,
+      remainingBalance,
+      status,
       date: new Date(),
     };
 
@@ -130,7 +155,7 @@ export const addCustomer = async (req, res) => {
       customer,
     });
   } catch (error) {
-    res.status(500).json({ error: "Server error" + error.message });
+    res.status(500).json({ error: "Server error " + error.message });
   }
 };
 
