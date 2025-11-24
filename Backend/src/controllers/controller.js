@@ -4,25 +4,55 @@ import Customer from "../models/customer.js";
 export const getDashboard = async (_, res) => {
   try {
     const totalCustomer = await Customer.countDocuments();
-    const customers = await Customer.find();
 
-    let totalPaid = 0;
-    let totalUnpaid = 0;
+    // const customers = await Customer.find();
+    // let totalPaid = 0;
+    // let totalUnpaid = 0;
+    // customers.forEach((customer) => {
+    //   customer.history.forEach((details) => {
+    //     if (details.status === "paid") {
+    //       totalPaid += details.paidAmount;
+    //     } else if (details.status === "partial") {
+    //       totalPaid += details.paidAmount;
+    //       totalUnpaid += details.remainingBalance;
+    //     } else {
+    //       totalUnpaid += details.remainingBalance;
+    //     }
+    //   });
+    // });
+    const statsResult = await Customer.aggregate([
+      { $unwind: "$history" },
+      {
+        $group: {
+          _id: null,
+          totalPaid: {
+            $sum: {
+              $cond: [
+                { $in: ["$history.status", ["paid", "partial"]] },
+                "$history.paidAmount",
+                0,
+              ],
+            },
+          },
+          totalUnpaid: {
+            $sum: {
+              $cond: [
+                { $ne: ["$history.status", "paid"] },
+                "$history.remainingBalance",
+                0,
+              ],
+            },
+          },
+        },
+      },
+    ]);
 
-    customers.forEach((customer) => {
-      customer.history.forEach((entry) => {
-        if (entry.status === "paid") {
-          totalPaid += entry.total;
-        } else if (entry.status === "unpaid") {
-          totalUnpaid += entry.total;
-        }
-      });
-    });
+    const stats = statsResult[0] || { totalPaid: 0, totalUnpaid: 0 };
 
     res.status(200).json({
       totalCustomer,
-      totalPaid,
-      totalUnpaid,
+      totalPaid: stats.totalPaid,
+      totalUnpaid: stats.totalUnpaid,
     });
   } catch (error) {
     console.error("Dashboard error:", error);
@@ -41,9 +71,9 @@ export const getAllCustomers = async (_, res) => {
 
       customer.history.forEach((utang) => {
         if (utang.status === "paid") {
-          totalPaid += utang.total;
+          totalPaid += utang.remainingBalance;
         } else {
-          totalUnpaid += utang.total;
+          totalUnpaid += utang.remainingBalance;
         }
       });
       return {
@@ -256,19 +286,19 @@ export const deleteUtang = async (req, res) => {
   try {
     const { customerId, utangId } = req.params;
 
-    const result = await Customer.findByIdAndUpdate(
-      customerId,
-      { $pull: { history: { _id: utangId } } },
-      { new: true }
+    const result = await Customer.updateOne(
+      { _id: customerId },
+      { $pull: { history: { _id: utangId } } }
     );
 
-    if (!result) {
+    if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Customer not found" });
     }
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ error: "Utang record not found" });
+    }
 
-    res
-      .status(200)
-      .json({ message: "utang deleted successfully", customer: result });
+    res.status(200).json({ message: "utang deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: "Server error" + error.message });
   }
