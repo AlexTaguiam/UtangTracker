@@ -1,5 +1,6 @@
 import customer from "../models/customer.js";
 import Customer from "../models/customer.js";
+import mongoose from "mongoose";
 //Load the Dashboard
 export const getDashboard = async (_, res) => {
   try {
@@ -99,36 +100,65 @@ export const getAllCustomers = async (_, res) => {
   }
 };
 
-//Load a specific customer based on ID
-export const getCustomer = async (req, res) => {
+export const getSingleCustomer = async (req, res) => {
   try {
     const customerId = req.params.customerId;
-    const customer = await Customer.findById(customerId);
 
-    if (!customer) {
+    const pipeline = [
+      {
+        $match: { _id: new mongoose.Types.ObjectId(customerId) },
+      },
+
+      {
+        $unwind: "$history",
+      },
+
+      {
+        $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
+          history: { $push: "$history" },
+
+          customerTotalPaid: {
+            $sum: {
+              $cond: [
+                { $in: ["$history.status", ["paid", "partial"]] },
+                "$history.paidAmount",
+                0,
+              ],
+            },
+          },
+
+          customerTotalUnpaid: {
+            $sum: {
+              $cond: [
+                { $ne: ["$history.status", "paid"] },
+                "$history.remainingBalance",
+                0,
+              ],
+            },
+          },
+        },
+      },
+
+      {
+        $project: {
+          _id: 0,
+          name: 1,
+          customerTotalPaid: 1,
+          customerTotalUnpaid: 1,
+          history: 1,
+        },
+      },
+    ];
+
+    const customerData = await Customer.aggregate(pipeline);
+
+    if (customerData.length === 0) {
       return res.status(404).json({ error: "Customer not found" });
     }
 
-    let customerTotalPaid = 0;
-    let customerTotalUnpaid = 0;
-
-    customer.history.forEach((details) => {
-      if (details.status === "paid") {
-        customerTotalPaid += details.paidAmount;
-      } else if (details.status === "partial") {
-        customerTotalPaid += details.paidAmount;
-        customerTotalUnpaid += details.remainingBalance;
-      } else {
-        customerTotalUnpaid += details.remainingBalance;
-      }
-    });
-
-    res.status(200).json({
-      name: customer.name,
-      customerTotalPaid,
-      customerTotalUnpaid,
-      history: customer.history,
-    });
+    res.status(200).json(customerData[0]);
   } catch (error) {
     res.status(500).json({ error: "Server error" + error.message });
   }

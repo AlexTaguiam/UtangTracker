@@ -4,8 +4,8 @@ import {
   deleteCustomer,
   deleteUtang,
   getAllCustomers,
-  getCustomer,
   getDashboard,
+  getSingleCustomer,
   updateUtangDetails,
 } from "../controllers/controller.js";
 
@@ -14,7 +14,7 @@ const router = express.Router();
 router.get("/dashboard", getDashboard);
 
 router.get("/customers", getAllCustomers);
-router.get("/customers/:customerId", getCustomer);
+router.get("/customers/:customerId", getSingleCustomer);
 router.post("/customers", addCustomer);
 
 router.put("/customers/:customerId/utang/:utangId/details", updateUtangDetails);
