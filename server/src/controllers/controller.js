@@ -5,21 +5,6 @@ export const getDashboard = async (_, res) => {
   try {
     const totalCustomer = await Customer.countDocuments();
 
-    // const customers = await Customer.find();
-    // let totalPaid = 0;
-    // let totalUnpaid = 0;
-    // customers.forEach((customer) => {
-    //   customer.history.forEach((details) => {
-    //     if (details.status === "paid") {
-    //       totalPaid += details.paidAmount;
-    //     } else if (details.status === "partial") {
-    //       totalPaid += details.paidAmount;
-    //       totalUnpaid += details.remainingBalance;
-    //     } else {
-    //       totalUnpaid += details.remainingBalance;
-    //     }
-    //   });
-    // });
     const statsResult = await Customer.aggregate([
       { $unwind: "$history" },
       {
@@ -63,27 +48,52 @@ export const getDashboard = async (_, res) => {
 //Load all the Customer
 export const getAllCustomers = async (_, res) => {
   try {
-    const allCustomers = await Customer.find();
+    const formattedCustomers = await Customer.aggregate([
+      {
+        $unwind: "$history",
+      },
 
-    const formatted = allCustomers.map((customer) => {
-      let totalPaid = 0;
-      let totalUnpaid = 0;
+      {
+        $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
 
-      customer.history.forEach((utang) => {
-        if (utang.status === "paid") {
-          totalPaid += utang.remainingBalance;
-        } else {
-          totalUnpaid += utang.remainingBalance;
-        }
-      });
-      return {
-        name: customer.name,
-        totalPaid,
-        totalUnpaid,
-      };
-    });
+          totalPaid: {
+            $sum: {
+              $cond: [
+                { $in: ["$history.status", ["paid", "partial"]] },
+                "$history.paidAmount",
+                0,
+              ],
+            },
+          },
 
-    res.status(200).json({ formatted });
+          totalUnpaid: {
+            $sum: {
+              $cond: [
+                { $ne: ["$history.status", "paid"] },
+                "$history.remainingBalance",
+                0,
+              ],
+            },
+          },
+
+          status: { $last: "$history.status" },
+        },
+      },
+
+      {
+        $project: {
+          _id: 0,
+          name: 1,
+          totalPaid: 1,
+          totalUnpaid: 1,
+          status: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({ formatted: formattedCustomers });
   } catch (error) {
     res.status(500).json({ error: "Server error" + error.message });
   }
@@ -102,11 +112,14 @@ export const getCustomer = async (req, res) => {
     let customerTotalPaid = 0;
     let customerTotalUnpaid = 0;
 
-    customer.history.forEach((utang) => {
-      if (utang.status === "paid") {
-        customerTotalPaid += utang.total;
-      } else if (utang.status === "unpaid") {
-        customerTotalUnpaid += utang.total;
+    customer.history.forEach((details) => {
+      if (details.status === "paid") {
+        customerTotalPaid += details.paidAmount;
+      } else if (details.status === "partial") {
+        customerTotalPaid += details.paidAmount;
+        customerTotalUnpaid += details.remainingBalance;
+      } else {
+        customerTotalUnpaid += details.remainingBalance;
       }
     });
 
@@ -186,38 +199,6 @@ export const addCustomer = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: "Server error " + error.message });
-  }
-};
-
-export const updateUtangStatus = async (req, res) => {
-  try {
-    const { customerId, utangId } = req.params;
-    const { status } = req.body;
-
-    if (!["paid", "unpaid"].includes(status)) {
-      return res.status(404).json({ error: "Invalid status value" });
-    }
-
-    const customer = await Customer.findById(customerId);
-    if (!customer) {
-      return res.status(404).json({ message: "Customer not found" });
-    }
-
-    const utang = customer.history.id(utangId);
-    if (!utang) {
-      return res.status(404).json({ message: "Utang record not found" });
-    }
-
-    utang.status = status;
-
-    await customer.save();
-
-    res.status(200).json({
-      message: `utang status updated to ${status}`,
-      updatedUtang: utang,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Server error" + error.message });
   }
 };
 
