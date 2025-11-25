@@ -6,7 +6,7 @@ import {
   getAllCustomers,
   getDashboard,
   getSingleCustomer,
-  updateUtangDetails,
+  utangPayment,
 } from "../controllers/controller.js";
 
 const router = express.Router();
@@ -17,7 +17,7 @@ router.get("/customers", getAllCustomers);
 router.get("/customers/:customerId", getSingleCustomer);
 router.post("/customers", addCustomer);
 
-router.put("/customers/:customerId/utang/:utangId/details", updateUtangDetails);
+router.put("/customers/:customerId/utang/:utangId/details", utangPayment);
 router.delete("/customers/:customerId/utang/:utangId", deleteUtang);
 
 router.delete("/customers/:customerId", deleteCustomer);

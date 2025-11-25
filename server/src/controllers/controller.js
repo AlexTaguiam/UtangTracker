@@ -232,15 +232,40 @@ export const addCustomer = async (req, res) => {
   }
 };
 
-export const updateUtangDetails = async (req, res) => {
+export const utangPayment = async (req, res) => {
   try {
+    // const { customerId, utangId } = req.params;
+    // const { product, price, amount, date, status } = req.body;
+    // const total = price * amount;
+    // if (!["paid", "unpaid", "partial"].includes(status)) {
+    //   return res.status(404).json({ error: "Invalid Status Value" });
+    // }
+    // const customer = await Customer.findById(customerId);
+    // if (!customer) {
+    //   return res.status(404).json({ message: "Customer not found" });
+    // }
+    // const utang = customer.history.id(utangId);
+    // if (!utang) {
+    //   return res.status(404).json({ message: "Utang Record not found" });
+    // }
+    // utang.product = product;
+    // utang.price = price;
+    // utang.amount = amount;
+    // utang.total = total;
+    // utang.date = date;
+    // utang.status = status;
+    // await customer.save();
+    // res.status(200).json({
+    //   message: `Customer's payment completed`,
+    //   updatedDetails: utang,
+    // });
+
     const { customerId, utangId } = req.params;
-    const { product, price, amount, date, status } = req.body;
+    const { paidAmount } = req.body;
+    const paidAmountNum = parseFloat(paidAmount);
 
-    const total = price * amount;
-
-    if (!["paid", "unpaid"].includes(status)) {
-      return res.status(404).json({ error: "Invalid Status Value" });
+    if (isNaN(paidAmountNum) || paidAmountNum <= 0) {
+      return res.status(400).json({ message: "Invalid paidAmount" });
     }
 
     const customer = await Customer.findById(customerId);
@@ -248,23 +273,45 @@ export const updateUtangDetails = async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    const utang = customer.history.id(utangId);
-    if (!utang) {
-      return res.status(404).json({ message: "Utang Record not found" });
+    const utangRecord = customer.history.id(utangId);
+    if (!utangRecord) {
+      return res.status(404).json({ message: "Utang record not found" });
     }
 
-    utang.product = product;
-    utang.price = price;
-    utang.amount = amount;
-    utang.total = total;
-    utang.date = date;
-    utang.status = status;
+    if (paidAmountNum > utangRecord.remainingBalance) {
+      return res.status(400).json({ message: "Payment exceeds balance" });
+    }
 
-    await customer.save();
+    const newRemaining = utangRecord.remainingBalance - paidAmountNum;
+    const newStatus = newRemaining > 0 ? "partial" : "paid";
+
+    const updateResult = await Customer.updateOne(
+      {
+        _id: customerId,
+        "history._id": utangId,
+      },
+      {
+        $inc: {
+          "history.$.paidAmount": paidAmountNum,
+          "history.$.remainingBalance": -paidAmountNum,
+        },
+        $set: {
+          "history.$.status": newStatus,
+        },
+      }
+    );
+
+    if (updateResult.modifiedCount === 0) {
+      return res
+        .status(500)
+        .json({ message: "Update failed or record changed." });
+    }
+
+    const updatedCustomer = await Customer.findById(customerId);
+    const updatedUtang = updatedCustomer.history.id(utangId);
 
     res.status(200).json({
-      message: `utang details updated`,
-      updatedDetails: utang,
+      result: updatedUtang,
     });
   } catch (error) {
     res.status(500).json({ error: "Server error" + error.message });
