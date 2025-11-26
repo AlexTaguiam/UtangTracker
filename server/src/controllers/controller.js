@@ -234,32 +234,6 @@ export const addCustomer = async (req, res) => {
 
 export const utangPayment = async (req, res) => {
   try {
-    // const { customerId, utangId } = req.params;
-    // const { product, price, amount, date, status } = req.body;
-    // const total = price * amount;
-    // if (!["paid", "unpaid", "partial"].includes(status)) {
-    //   return res.status(404).json({ error: "Invalid Status Value" });
-    // }
-    // const customer = await Customer.findById(customerId);
-    // if (!customer) {
-    //   return res.status(404).json({ message: "Customer not found" });
-    // }
-    // const utang = customer.history.id(utangId);
-    // if (!utang) {
-    //   return res.status(404).json({ message: "Utang Record not found" });
-    // }
-    // utang.product = product;
-    // utang.price = price;
-    // utang.amount = amount;
-    // utang.total = total;
-    // utang.date = date;
-    // utang.status = status;
-    // await customer.save();
-    // res.status(200).json({
-    //   message: `Customer's payment completed`,
-    //   updatedDetails: utang,
-    // });
-
     const { customerId, utangId } = req.params;
     const { paidAmount } = req.body;
     const paidAmountNum = parseFloat(paidAmount);

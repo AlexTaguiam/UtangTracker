@@ -9,13 +9,13 @@ const PORT = 3000;
 
 app.use(express.json());
 
-app.use(apiLimiter);
-
 app.use(
   cors({
     origin: "http://localhost:5173",
   })
 );
+
+app.use(apiLimiter);
 
 app.use("/api", router);
 
