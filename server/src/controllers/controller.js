@@ -80,6 +80,10 @@ export const getAllCustomers = async (_, res) => {
           },
 
           status: { $last: "$history.status" },
+
+          remainingBalance: {
+            $sum: "$history.remainingBalance",
+          },
         },
       },
 
@@ -90,6 +94,7 @@ export const getAllCustomers = async (_, res) => {
           totalPaid: 1,
           totalUnpaid: 1,
           status: 1,
+          remainingBalance: 1,
         },
       },
     ]);
