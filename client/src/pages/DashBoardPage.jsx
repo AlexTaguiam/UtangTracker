@@ -5,29 +5,57 @@ import {
   CircleCheckBig,
   CirclePlus,
   FileSearchCorner,
+  Route,
 } from "lucide-react";
 
 import { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import RateLimitedUI from "../components/RateLimitedUI";
 
 const DashBoardPage = () => {
   const [data, setData] = useState({});
+  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [isRefresh, setIsRefresh] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchDashBoard = async () => {
+      setIsRateLimited(false);
+      setIsLoading(false);
       try {
         const response = await axios.get(`http://localhost:3000/api/dashboard`);
         setData(response.data);
       } catch (error) {
         console.log("Error in fetching dashboard", error.message);
+        if (error.status === 429) {
+          setIsRateLimited(true);
+          setIsLoading(true);
+        }
       }
     };
     fetchDashBoard();
-  }, []);
+  }, [isRefresh]);
+
+  const handleRetry = () => {
+    setIsRefresh(!isRefresh);
+  };
+
+  const handleClose = () => {
+    setIsRateLimited(false);
+  };
+
+  if (isRateLimited) {
+    return (
+      <RateLimitedUI
+        onTriggerRetry={handleRetry}
+        onTriggerClose={handleClose}
+      />
+    );
+  }
 
   return (
-    <div className="flex  flex-col h-screen justify-center items-center bg-gray-100 font-poppins">
+    <div className="flex h-screen justify-center items-center bg-gray-100 font-poppins">
       <div className="w-full max-w-md mx-auto p-4 sm:p-6 min-h-screen flex  flex-col">
         <header>
           <section className="text-center mb-8 pt-4">
@@ -45,7 +73,12 @@ const DashBoardPage = () => {
                 Total Customer
               </section>
               <section className="text-3xl font-bold">
-                {data ? <p>{data.totalCustomer}</p> : <p>Loading...</p>}
+                {isLoading && (
+                  <p className="text-red-600 text-sm font-semibold text-center">
+                    Please try again later.
+                  </p>
+                )}
+                {data && <p>{data.totalCustomer}</p>}
               </section>
             </div>
             <div className="bg-[#fee2e2] text-red-800 p-4 rounded-lg shadow-md flex flex-col items-center justify-center">
@@ -54,7 +87,15 @@ const DashBoardPage = () => {
               </section>
               <section className="text-sm font-semibold">Total Unpaid</section>
               <section className="text-3xl font-bold">
-                {data ? <p>₱{data.totalUnpaid}</p> : <p>Loading...</p>}
+                {isLoading ? (
+                  <p className="text-red-600 text-sm font-semibold text-center">
+                    Please try again later.
+                  </p>
+                ) : data ? (
+                  <p>₱{data.totalUnpaid}</p>
+                ) : (
+                  <p>Loading...</p>
+                )}
               </section>
             </div>
           </div>
@@ -67,7 +108,15 @@ const DashBoardPage = () => {
                 <section className="text-sm font-semibold">Total Paid</section>
                 <section className="text-3xl font-bold">
                   {" "}
-                  {data ? <p>₱{data.totalPaid}</p> : <p>Loading...</p>}
+                  {isLoading ? (
+                    <p className="text-red-600 text-sm font-semibold text-center">
+                      Please try again later.
+                    </p>
+                  ) : data ? (
+                    <p>₱{data.totalPaid}</p>
+                  ) : (
+                    <p>Loading...</p>
+                  )}
                 </section>
               </div>
             </div>
@@ -108,7 +157,6 @@ const DashBoardPage = () => {
               </section>
               <section className="text-lg font-bold">View all utangs</section>
             </Link>
-            <div></div>
           </div>
         </main>
       </div>
