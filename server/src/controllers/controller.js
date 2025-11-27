@@ -89,7 +89,7 @@ export const getAllCustomers = async (_, res) => {
 
       {
         $project: {
-          _id: 0,
+          _id: 1,
           name: 1,
           totalPaid: 1,
           totalUnpaid: 1,
