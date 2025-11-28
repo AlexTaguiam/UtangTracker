@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 
 const CustomerDetailPage = () => {
@@ -105,7 +105,7 @@ const CustomerDetailPage = () => {
                             )
                           : "No date available"}
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-gray-400 mt-2">
                         <p>
                           {customerHistory?.date
                             ? new Date(
@@ -143,7 +143,7 @@ const CustomerDetailPage = () => {
                             <h4 className="font-bold text-gray-800 text-sm product-name">
                               {product.product}
                             </h4>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 mt-2">
                               {product.quantity} x ₱ {product.price}
                             </p>
                           </div>
@@ -182,7 +182,10 @@ const CustomerDetailPage = () => {
                     <div className="flex space-x-2 mt-4 justify-end">
                       {customerHistory.status === "unpaid" ||
                       customerHistory.status === "partial" ? (
-                        <button className="flex items-center text-xs font-bold bg-green-100 text-green-700 px-3 py-2 rounded-lg hover:bg-green-200 transition-colors">
+                        <Link
+                          to={`/customers/${id}/payment/${customerHistory._id}`}
+                          className="flex items-center text-xs font-bold bg-green-100 text-green-700 px-3 py-2 rounded-lg hover:bg-green-200 transition-colors"
+                        >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-4 w-4 mr-1"
@@ -198,11 +201,14 @@ const CustomerDetailPage = () => {
                             />
                           </svg>
                           Pay
-                        </button>
+                        </Link>
                       ) : (
                         ""
                       )}
-                      <button className="flex items-center text-xs font-bold bg-gray-200 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                      <Link
+                        to={`/customers/${id}/deleteHistory/${customerHistory._id}`}
+                        className="flex items-center text-xs font-bold bg-gray-200 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-4 w-4 mr-1"
@@ -218,7 +224,7 @@ const CustomerDetailPage = () => {
                           />
                         </svg>
                         Delete
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
