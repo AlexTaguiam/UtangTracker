@@ -18,10 +18,13 @@ function App() {
         <Route path="/addCustomer" element={<AddUtangPage />} />
         <Route path="/allUtang" element={<AllUtangPage />} />
         <Route
-          path="/customers/:id/deleteHistory/:id"
+          path="/customers/:id/deleteHistory/:deleteId"
           element={<DeleteConfirmationPage />}
         />
-        <Route path="/customers/:id/payment/:id" element={<PaymentPage />} />
+        <Route
+          path="/customers/:id/payment/:paymentId"
+          element={<PaymentPage />}
+        />
       </Routes>
     </div>
   );

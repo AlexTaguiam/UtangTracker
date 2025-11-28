@@ -1,4 +1,29 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+
 const DeleteConfirmationPage = () => {
+  const { id } = useParams();
+  const { deleteId } = useParams();
+  const [deletedData, setDeletedData] = useState(null);
+  const backToDetailPage = useNavigate();
+
+  const deleteTransaction = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/customers/${id}/utang/${deleteId}`
+      );
+      toast.success("Transaction Deleted Successfully");
+      setDeletedData(response.data);
+      backToDetailPage("/customers/${id}");
+    } catch (error) {
+      toast.error("Transaction Deletion Failed");
+      console.error("Error in deleting transaction", error.message);
+    }
+  };
+
   return (
     <>
       <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-50">
@@ -14,10 +39,16 @@ const DeleteConfirmationPage = () => {
           </p>
 
           <div className="flex justify-end space-x-4">
-            <button className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-all">
+            <Link
+              to={`/customers/${id}`}
+              className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-all"
+            >
               Cancel
-            </button>
-            <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-all">
+            </Link>
+            <button
+              onClick={deleteTransaction}
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-all"
+            >
               Delete
             </button>
           </div>
