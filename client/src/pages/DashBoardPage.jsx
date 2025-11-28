@@ -57,11 +57,9 @@ const DashBoardPage = () => {
   return (
     <div className="flex h-screen justify-center items-center bg-gray-100 font-poppins">
       <div className="w-full max-w-md mx-auto p-4 sm:p-6 min-h-screen flex  flex-col">
-        <header>
-          <section className="text-center mb-8 pt-4">
-            <h1 className="text-3xl font-bold text-[#831843]">Dashboard</h1>
-            <p className="text-gray-600 text-md"> Welcome back</p>
-          </section>
+        <header className="text-center mb-8 pt-4">
+          <h1 className="text-3xl font-bold text-[#831843]">Dashboard</h1>
+          <p className="text-gray-600 text-md"> Welcome back</p>
         </header>
         <main>
           <div className="grid grid-cols-2 gap-4 mb-8">
@@ -138,7 +136,7 @@ const DashBoardPage = () => {
               </section>
             </Link>
             <Link
-              to="/allCustomers"
+              to="/customers"
               className="bg-[#2563eb] text-white p-4 rounded-lg shadow-md hover:bg-[#1d4ed8] transition-all duration-200 flex flex-col items-center justify-center h-32"
             >
               <section>
