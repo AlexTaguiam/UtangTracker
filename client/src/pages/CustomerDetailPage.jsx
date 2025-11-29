@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ClipboardClock } from "lucide-react";
 import axios from "axios";
+import { formatCurrency } from "../utils/format";
 
 const CustomerDetailPage = () => {
   const { id } = useParams();
@@ -56,7 +57,7 @@ const CustomerDetailPage = () => {
                 </p>
               </div>
               <p id="overallPaid" className="text-2xl font-bold">
-                ₱{data.customerTotalUnpaid}
+                {formatCurrency(data.customerTotalUnpaid)}
               </p>
             </div>
 
@@ -81,7 +82,7 @@ const CustomerDetailPage = () => {
                 </p>
               </div>
               <p id="overallPaid" className="text-2xl font-bold">
-                ₱{data.customerTotalPaid}
+                {formatCurrency(data.customerTotalPaid)}
               </p>
             </div>
           </div>
@@ -151,11 +152,12 @@ const CustomerDetailPage = () => {
                               {product.product}
                             </h4>
                             <p className="text-xs text-gray-500 mt-2">
-                              {product.quantity} x ₱ {product.price}
+                              {product.quantity} x{" "}
+                              {formatCurrency(product.price)}
                             </p>
                           </div>
                           <p className="font-bold text-gray-700 text-sm">
-                            ₱{product.total}
+                            {formatCurrency(product.total)}
                           </p>
                         </div>
                       </div>
@@ -168,13 +170,13 @@ const CustomerDetailPage = () => {
                         Total Amount
                       </span>
                       <span className="font-bold text-gray-800">
-                        ₱{customerHistory.totalAmount}
+                        {formatCurrency(customerHistory.totalAmount)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-sm text-gray-500">Paid</span>
                       <span className="font-semibold text-green-600">
-                        ₱{customerHistory.paidAmount}
+                        {formatCurrency(customerHistory.paidAmount)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center pt-2 mt-2 border-t border-gray-200">
@@ -182,7 +184,7 @@ const CustomerDetailPage = () => {
                         Remaining Balance
                       </span>
                       <span className="font-bold text-red-600 text-lg">
-                        ₱{customerHistory.remainingBalance}
+                        {formatCurrency(customerHistory.remainingBalance)}
                       </span>
                     </div>
 

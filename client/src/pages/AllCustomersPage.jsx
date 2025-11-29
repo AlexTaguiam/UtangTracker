@@ -2,6 +2,7 @@ import axios from "axios";
 import { Search, Eye, SearchX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { formatCurrency } from "../utils/format";
 
 const AllCustomersPage = () => {
   const [data, setData] = useState([]);
@@ -87,9 +88,9 @@ const AllCustomersPage = () => {
                               Partial
                             </p>
                             <p className="text-sm font-medium text-gray-700 mt-1">
-                              Remaining: ₱
-                              {customer.remainingBalance ||
-                                customer.totalUnpaid}
+                              Remaining:
+                              {formatCurrency(customer.remainingBalance) ||
+                                formatCurrency(customer.totalUnpaid)}
                             </p>
                           </div>
                         ) : customer.status === "unpaid" ? (
@@ -98,9 +99,9 @@ const AllCustomersPage = () => {
                               Unpaid
                             </p>
                             <p className="text-sm font-medium text-gray-700 mt-1">
-                              Balance: ₱
-                              {customer.remainingBalance ||
-                                customer.totalUnpaid}
+                              Balance:
+                              {formatCurrency(customer.remainingBalance) ||
+                                formatCurrency(customer.totalUnpaid)}
                             </p>
                           </div>
                         ) : (

@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import RateLimitedUI from "../components/RateLimitedUI";
+import { formatCurrency } from "../utils/format";
 
 const DashBoardPage = () => {
   const [data, setData] = useState({});
@@ -90,7 +91,7 @@ const DashBoardPage = () => {
                     Please try again later.
                   </p>
                 ) : data ? (
-                  <p>₱{data.totalUnpaid}</p>
+                  <p>{formatCurrency(data.totalUnpaid)}</p>
                 ) : (
                   <p>Loading...</p>
                 )}
@@ -111,7 +112,7 @@ const DashBoardPage = () => {
                       Please try again later.
                     </p>
                   ) : data ? (
-                    <p>₱{data.totalPaid}</p>
+                    <p>{formatCurrency(data.totalPaid)}</p>
                   ) : (
                     <p>Loading...</p>
                   )}

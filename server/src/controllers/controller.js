@@ -346,3 +346,63 @@ export const deleteUtang = async (req, res) => {
     res.status(500).json({ error: "Server error" + error.message });
   }
 };
+
+export const getCustomerTransactionsForPaymentPage = async (req, res) => {
+  try {
+    const customerId = req.params.customerId;
+
+    const pipeline = [
+      {
+        $match: { _id: new mongoose.Types.ObjectId(customerId) },
+      },
+
+      {
+        $unwind: "$history",
+      },
+
+      {
+        $project: {
+          _id: 0,
+          customerId: "$_id",
+          customerName: "$name",
+
+          id: "$history._id",
+          date: "$history.date",
+          status: "$history.status",
+          paidAmount: "$history.paidAmount",
+          remainingBalance: "$history.remainingBalance",
+
+          totalAmount: {
+            $add: ["$history.paidAmount", "$history.remainingBalance"],
+          },
+
+          transactionDetails: "$history",
+        },
+      },
+
+      {
+        $sort: { date: -1 },
+      },
+    ];
+
+    const transactions = await Customer.aggregate(pipeline);
+
+    if (transactions.length === 0) {
+      return res.status(200).json({
+        customerName: "Customer Found (No Transactions)",
+        transactions: [],
+      });
+    }
+
+    const customerName = transactions[0].customerName;
+
+    res.status(200).json({
+      customerName: customerName,
+      transactions: transactions,
+    });
+  } catch (error) {
+    console.error("Payment page transaction error:", error);
+
+    res.status(500).json({ error: "Server error: " + error.message });
+  }
+};
