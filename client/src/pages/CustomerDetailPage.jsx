@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { ClipboardClock } from "lucide-react";
 import axios from "axios";
 
 const CustomerDetailPage = () => {
@@ -7,13 +8,19 @@ const CustomerDetailPage = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     const getCustomerDetail = async () => {
-      const response = await axios.get(
-        `http://localhost:3000/api/customers/${id}`
-      );
-      setData(response.data);
+      try {
+        console.log("ID:", id);
+        const response = await axios.get(
+          `http://localhost:3000/api/customers/${id}`
+        );
+        console.log("API Response:", response.data);
+        setData(response.data);
+      } catch (error) {
+        console.error("Error in Customer Detail Page", error);
+      }
     };
     getCustomerDetail();
-  }, []);
+  }, [id]);
 
   console.log(data);
 
@@ -23,7 +30,7 @@ const CustomerDetailPage = () => {
         <div className="w-full max-w-md mx-auto p-4 sm:p-6 min-h-screen pb-24">
           <div className="text-center mb-6 pt-4">
             <h1 id="customerName" className="text-3xl font-bold text-[#831843]">
-              {data.name}
+              {data.name || " No records found"}
             </h1>
             <p className="text-gray-600 text-md">Utang history and actions</p>
           </div>
@@ -84,11 +91,11 @@ const CustomerDetailPage = () => {
             </h2>
           </div>
 
-          {data &&
-            data.history?.map((customerHistory, index) => {
+          {data.history?.length > 0 ? (
+            data.history.map((customerHistory, index) => {
               return (
                 <div
-                  key={index}
+                  key={customerHistory._id || index}
                   className="transaction-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 mb-5"
                 >
                   <div className="bg-white p-4 border-b border-gray-100 flex justify-between items-center">
@@ -229,7 +236,14 @@ const CustomerDetailPage = () => {
                   </div>
                 </div>
               );
-            })}
+            })
+          ) : (
+            <div className=" flex flex-col items-center gap-5">
+              {" "}
+              <p>Your activity will show up here</p>
+              <ClipboardClock size={54} />
+            </div>
+          )}
         </div>
       </div>
     );

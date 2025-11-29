@@ -51,7 +51,10 @@ export const getAllCustomers = async (_, res) => {
   try {
     const formattedCustomers = await Customer.aggregate([
       {
-        $unwind: "$history",
+        $unwind: {
+          path: "$history",
+          preserveNullAndEmptyArrays: true,
+        },
       },
 
       {
@@ -115,7 +118,10 @@ export const getSingleCustomer = async (req, res) => {
       },
 
       {
-        $unwind: "$history",
+        $unwind: {
+          path: "$history",
+          preserveNullAndEmptyArrays: true,
+        },
       },
 
       {

@@ -92,7 +92,7 @@ const AllCustomersPage = () => {
                                 customer.totalUnpaid}
                             </p>
                           </div>
-                        ) : (
+                        ) : customer.status === "unpaid" ? (
                           <div className="mt-2">
                             <p className="text-sm font-semibold bg-[#dc2626] p-1.5 text-white rounded-md inline-block">
                               Unpaid
@@ -101,6 +101,12 @@ const AllCustomersPage = () => {
                               Balance: ₱
                               {customer.remainingBalance ||
                                 customer.totalUnpaid}
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="mt-2">
+                            <p className="text-sm font-semibold bg-gray-500 p-1.5 text-white rounded-md inline-block">
+                              No records found
                             </p>
                           </div>
                         )}
