@@ -4,12 +4,14 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router";
 import { formatCurrency, formatNumber } from "../utils/format";
+import { toast } from "react-hot-toast";
 
 const PaymentPage = () => {
   const [data, setData] = useState([]);
-  const { id } = useParams();
+  const { id, paymentId } = useParams();
   const [amount, setAmount] = useState(0);
   const [isInvalid, setIsInvalid] = useState(false);
+  const [triggerRender, setTriggerRender] = useState(false);
   useEffect(() => {
     const getPaymentCustomerDetails = async () => {
       try {
@@ -23,7 +25,7 @@ const PaymentPage = () => {
       }
     };
     getPaymentCustomerDetails();
-  }, []);
+  }, [triggerRender]);
 
   const remainingBalance = data.transactions?.[0]?.remainingBalance ?? 0;
 
@@ -36,6 +38,31 @@ const PaymentPage = () => {
       setIsInvalid(false);
     }
   }, [amount, remainingBalance]);
+
+  const handlePayment = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (amount === 0) {
+        toast.error("cannot process 0");
+        return console.log("Invalid Amount");
+      }
+      const amountTobePaid = Number(amount);
+      const response = await axios.put(
+        `http://localhost:3000/api/customers/${id}/utang/${paymentId}/details`,
+        {
+          paidAmount: amountTobePaid,
+        }
+      );
+      setTriggerRender(!triggerRender);
+      setAmount(0);
+      toast.success("Successfull Payment");
+      console.log("SuccessfullyPaid", response);
+    } catch (error) {
+      console.error("Error in submitting payment", error);
+      toast.error("failed payment");
+    }
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen pb-10">
@@ -203,11 +230,7 @@ const PaymentPage = () => {
             );
           })}
         <form
-          id="paymentForm"
-          onSubmit={(e) => {
-            e.preventDefault();
-            console.log("Payment submitted");
-          }}
+          onSubmit={handlePayment}
           className="bg-white rounded-xl shadow-lg p-5 border border-sari-green/20"
         >
           <label className="block text-sm font-bold text-gray-700 mb-2">
@@ -220,8 +243,8 @@ const PaymentPage = () => {
             </div>
             <input
               type="number"
-              id="paymentInput"
               placeholder="0.00"
+              step="0.01"
               className="block w-full pl-10 pr-4 py-4 text-2xl font-bold text-gray-800 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sari-green focus:border-sari-green transition-all"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -284,7 +307,7 @@ const PaymentPage = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 pointer-events-none">
+          <div className="grid grid-cols-2 gap-3">
             <Link
               to={`/customers/${id}`}
               type="button"
@@ -298,7 +321,9 @@ const PaymentPage = () => {
               id="submitBtn"
               className="py-3 px-4 rounded-lg font-bold text-white bg-[#16a34a] hover:bg-sari-green-dark shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Confirm Payment
+              {data.transactions?.[0].status === "paid"
+                ? "Already Paid"
+                : "Confirm Payment"}
             </button>
           </div>
         </form>
