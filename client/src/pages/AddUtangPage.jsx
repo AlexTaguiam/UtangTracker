@@ -1,11 +1,50 @@
 import React, { useEffect, useState } from "react";
 import { Combobox, ComboboxInput, ComboboxOptions } from "@headlessui/react";
 import axios from "axios";
+import AddItemCard from "../components/AddItemCard";
+import { formatCurrency } from "../utils/format";
 
 const AddUtangPage = () => {
   const [customers, setCustomer] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [query, setQuery] = useState("");
+  const [card, setCard] = useState([]);
+  const [cardData, setCardData] = useState([]);
+
+  const addCard = () => {
+    const newId = Date.now();
+    setCard([...card, newId]);
+    setCardData([
+      ...cardData,
+      { id: newId, productName: "", quantity: 0, price: 0, total: 0 },
+    ]);
+  };
+
+  const deleteCard = (deleteId) => {
+    setCard(card.filter((id) => deleteId !== id));
+    setCardData(cardData.filter((card) => card.id !== deleteId));
+  };
+
+  const handleCardData = (id, newCardData) => {
+    setCardData((prevCardData) =>
+      prevCardData.map((card) =>
+        card.id === id ? { ...card, ...newCardData } : card
+      )
+    );
+  };
+
+  const totalAmount = cardData.reduce((acc, curr) => acc + curr.total, 0);
+
+  const products = cardData.map((customer) => {
+    return {
+      product: customer.productName,
+      quantity: customer.quantity,
+      price: customer.price,
+    };
+  });
+
+  console.log(totalAmount);
+  console.log(products);
 
   useEffect(() => {
     const getCustomersName = async () => {
@@ -31,17 +70,21 @@ const AddUtangPage = () => {
     <div className="bg-gray-100 font-poppins">
       <div className="w-full max-w-md mx-auto p-4 sm:p-6 min-h-screen pb-24">
         <div className="text-center mb-6 pt-4">
-          <h1 className="text-3xl font-bold text-sari-maroon">Add Utang</h1>
+          <h1 className="text-3xl font-bold text-[#831843]">Add Utang</h1>
           <p className="text-gray-600 text-md">Record new items (Unpaid)</p>
         </div>
-        <div className="space-y-5">
+        <form className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="inputCustomer"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Select Customer or Add a new One
             </label>
             <div className="relative rounded-md shadow-sm">
               <Combobox value={selectedCustomer} onChange={setSelectedCustomer}>
                 <ComboboxInput
+                  id="inputCustomer"
                   className={"w-full border rounded-lg px-3 py-2"}
                   displayValue={(customer) => customer}
                   onChange={(event) => setQuery(event.target.value)}
@@ -70,7 +113,7 @@ const AddUtangPage = () => {
               </Combobox>
             </div>
           </div>
-        </div>
+        </form>
         <div className="pt-3">
           <div className="flex justify-between items-center mb-2">
             <label className="block text-xl font-medium text-gray-700">
@@ -78,7 +121,7 @@ const AddUtangPage = () => {
             </label>
             <button
               type="button"
-              onClick={""}
+              onClick={addCard}
               className="text-xl font-bold text-[#16a34a] hover:text-green-700 flex items-center"
             >
               <svg
@@ -99,7 +142,44 @@ const AddUtangPage = () => {
             </button>
           </div>
         </div>
-        <div className="space-y-3"></div>
+        <div className="space-y-3">
+          {card.map((id) => (
+            <AddItemCard
+              key={id}
+              id={id}
+              deleteCard={() => deleteCard(id)}
+              onChange={handleCardData}
+            />
+          ))}
+        </div>
+        <div className="bg-gray-800 text-white p-4 rounded-xl shadow-lg mt-6">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-300 font-medium">Total Amount</span>
+            <span
+              className="text-2xl font-bold text-white"
+              id="displayGrandTotal"
+            >
+              {formatCurrency(totalAmount)}
+            </span>
+          </div>
+          <p className="text-xs text-gray-400 mt-1 italic text-right">
+            *Added to unpaid balance
+          </p>
+        </div>
+        <div className="pt-4">
+          <button
+            type="button"
+            // onClick={handleSubm}
+            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-white font-bold bg-[#16a34a] hover:bg-[#15803d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sari-green-dark transition-all duration-200"
+            style={{
+              paddingTop: "14px",
+              paddingBottom: "14px",
+              fontSize: "1.1rem",
+            }}
+          >
+            Save Utang
+          </button>
+        </div>
       </div>
     </div>
   );
