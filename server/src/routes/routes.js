@@ -7,13 +7,13 @@ import {
   getDashboard,
   getSingleCustomer,
   utangPayment,
-  getCustomerTransactionsForPaymentPage,
+  getSpecificTransaction,
 } from "../controllers/controller.js";
 
 const router = express.Router();
 
 router.get("/dashboard", getDashboard);
-router.get("/:customerId/transactions", getCustomerTransactionsForPaymentPage);
+router.get("/transaction/:customerId/:historyId", getSpecificTransaction);
 
 router.get("/customers", getAllCustomers);
 router.get("/customers/:customerId", getSingleCustomer);

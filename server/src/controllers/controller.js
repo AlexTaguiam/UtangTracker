@@ -347,59 +347,49 @@ export const deleteUtang = async (req, res) => {
   }
 };
 
-export const getCustomerTransactionsForPaymentPage = async (req, res) => {
+export const getSpecificTransaction = async (req, res) => {
   try {
-    const customerId = req.params.customerId;
+    const { customerId, historyId } = req.params;
 
     const pipeline = [
       {
         $match: { _id: new mongoose.Types.ObjectId(customerId) },
       },
-
       {
         $unwind: "$history",
       },
-
+      {
+        $match: { "history._id": new mongoose.Types.ObjectId(historyId) },
+      },
       {
         $project: {
           _id: 0,
           customerId: "$_id",
           customerName: "$name",
-
-          id: "$history._id",
-          date: "$history.date",
-          status: "$history.status",
-          paidAmount: "$history.paidAmount",
-          remainingBalance: "$history.remainingBalance",
-
-          totalAmount: {
-            $add: ["$history.paidAmount", "$history.remainingBalance"],
+          transactions: {
+            id: "$history._id",
+            date: "$history.date",
+            status: "$history.status",
+            paidAmount: "$history.paidAmount",
+            remainingBalance: "$history.remainingBalance",
+            products: "$history.products",
+            totalAmount: {
+              $add: ["$history.paidAmount", "$history.remainingBalance"],
+            },
           },
-
-          transactionDetails: "$history",
         },
-      },
-
-      {
-        $sort: { date: -1 },
       },
     ];
 
-    const transactions = await Customer.aggregate(pipeline);
+    const result = await Customer.aggregate(pipeline);
 
-    if (transactions.length === 0) {
-      return res.status(200).json({
-        customerName: "Customer Found (No Transactions)",
-        transactions: [],
-      });
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Transaction not found" });
     }
 
-    const customerName = transactions[0].customerName;
+    const singleTransaction = result[0];
 
-    res.status(200).json({
-      customerName: customerName,
-      transactions: transactions,
-    });
+    res.status(200).json(singleTransaction);
   } catch (error) {
     console.error("Payment page transaction error:", error);
 
