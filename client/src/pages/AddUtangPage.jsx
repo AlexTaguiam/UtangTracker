@@ -3,6 +3,7 @@ import { Combobox, ComboboxInput, ComboboxOptions } from "@headlessui/react";
 import axios from "axios";
 import AddItemCard from "../components/AddItemCard";
 import { formatCurrency } from "../utils/format";
+import { toast } from "react-hot-toast";
 
 const AddUtangPage = () => {
   const [customers, setCustomer] = useState([]);
@@ -42,7 +43,7 @@ const AddUtangPage = () => {
       price: customer.price,
     };
   });
-
+  console.log(selectedCustomer);
   console.log(totalAmount);
   console.log(products);
 
@@ -58,6 +59,34 @@ const AddUtangPage = () => {
     };
     getCustomersName();
   }, []);
+
+  const handleSubmit = async () => {
+    try {
+      if (
+        selectedCustomer.trim() === "" ||
+        !products ||
+        Object.keys(products).length === 0
+      ) {
+        return console.log("Invalid inputs — please review and resubmit");
+      }
+
+      const response = await axios.post(`http://localhost:3000/api/customers`, {
+        name: selectedCustomer,
+        products: products,
+      });
+      console.log(
+        `Products is successfully added to ${selectedCustomer}`,
+        response.data
+      );
+      toast.success("“We have got it! Your submission has been saved.”");
+      setCardData([]);
+      setCard([]);
+      setSelectedCustomer("");
+    } catch (error) {
+      console.error("Error in Adding the products", error);
+      toast.error("“Oops! Something went wrong. Please try again.”");
+    }
+  };
 
   const filteredCustomers =
     query === ""
@@ -169,7 +198,7 @@ const AddUtangPage = () => {
         <div className="pt-4">
           <button
             type="button"
-            // onClick={handleSubm}
+            onClick={handleSubmit}
             className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-white font-bold bg-[#16a34a] hover:bg-[#15803d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sari-green-dark transition-all duration-200"
             style={{
               paddingTop: "14px",
