@@ -56,7 +56,7 @@ const DashBoardPage = () => {
   }
 
   return (
-    <div className="flex h-screen justify-center items-center bg-gray-100 font-poppins">
+    <div className="flex justify-center items-center bg-gray-100 font-poppins">
       <div className="w-full max-w-md mx-auto p-4 sm:p-6 min-h-screen flex  flex-col">
         <header className="text-center mb-8 pt-4">
           <h1 className="text-3xl font-bold text-[#831843]">Dashboard</h1>

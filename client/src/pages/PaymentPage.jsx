@@ -1,9 +1,8 @@
 import axios from "axios";
-import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router";
-import { formatCurrency, formatNumber } from "../utils/format";
+import { formatCurrency } from "../utils/format";
 import { toast } from "react-hot-toast";
 
 const PaymentPage = () => {

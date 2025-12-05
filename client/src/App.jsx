@@ -7,6 +7,7 @@ import AddUtangPage from "./pages/AddUtangPage";
 import AllUtangPage from "./pages/AllUtangPage";
 import DeleteConfirmationPage from "./pages/DeleteConfirmationPage";
 import PaymentPage from "./pages/PaymentPage";
+import DeleteCustomerConfirmationPage from "./pages/DeleteCustomerConfirmationPage";
 
 function App() {
   return (
@@ -21,6 +22,11 @@ function App() {
           path="/customers/:id/deleteHistory/:deleteId"
           element={<DeleteConfirmationPage />}
         />
+        <Route
+          path="/deleteCustomers/:id"
+          element={<DeleteCustomerConfirmationPage />}
+        />
+
         <Route
           path="/customers/:id/payment/:paymentId"
           element={<PaymentPage />}

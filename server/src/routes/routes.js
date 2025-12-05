@@ -8,12 +8,14 @@ import {
   getSingleCustomer,
   utangPayment,
   getSpecificTransaction,
+  getAllCustomersUtang,
 } from "../controllers/controller.js";
 
 const router = express.Router();
 
 router.get("/dashboard", getDashboard);
 router.get("/transaction/:customerId/:historyId", getSpecificTransaction);
+router.get("/allCustomersUtang", getAllCustomersUtang);
 
 router.get("/customers", getAllCustomers);
 router.get("/customers/:customerId", getSingleCustomer);

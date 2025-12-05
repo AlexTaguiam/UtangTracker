@@ -87,6 +87,8 @@ export const getAllCustomers = async (_, res) => {
           remainingBalance: {
             $sum: "$history.remainingBalance",
           },
+
+          lastDate: { $max: "$history.date" },
         },
       },
 
@@ -98,6 +100,7 @@ export const getAllCustomers = async (_, res) => {
           totalUnpaid: 1,
           status: 1,
           remainingBalance: 1,
+          lastDate: 1,
         },
       },
     ]);
@@ -392,6 +395,45 @@ export const getSpecificTransaction = async (req, res) => {
     res.status(200).json(singleTransaction);
   } catch (error) {
     console.error("Payment page transaction error:", error);
+
+    res.status(500).json({ error: "Server error: " + error.message });
+  }
+};
+
+export const getAllCustomersUtang = async (req, res) => {
+  try {
+    const customers = await Customer.aggregate([
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          history: 1,
+        },
+      },
+
+      {
+        $addFields: {
+          compiledHistory: {
+            $map: {
+              input: { $ifNull: ["$history", []] },
+              as: "h",
+              in: {
+                date: "$$h.date",
+                status: "$$h.status",
+                totalAmount: "$$h.totalAmount",
+                paidAmount: "$$h.paidAmount",
+                remainingBalance: "$$h.remainingBalance",
+                product: "$$h.products",
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json({ customers });
+  } catch (error) {
+    console.error("Get All Customers Utang error:", error);
 
     res.status(500).json({ error: "Server error: " + error.message });
   }

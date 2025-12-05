@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Search, Eye, SearchX } from "lucide-react";
+import { Search, Eye, SearchX, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../utils/format";
@@ -40,7 +40,7 @@ const AllCustomersPage = () => {
   };
 
   return (
-    <div className="flex h-screen justify-center items-center bg-gray-100 font-poppins">
+    <div className="flex justify-center items-center bg-gray-100 font-poppins">
       <div className="w-full max-w-md mx-auto p-4 sm:p-6 min-h-screen flex  flex-col">
         <header className="text-center mb-8 pt-4">
           <h1 className="text-3xl font-bold text-[#831843]">Customers</h1>
@@ -112,11 +112,17 @@ const AllCustomersPage = () => {
                           </div>
                         )}
                       </div>
-                      <div>
+                      <div className="flex gap-2">
+                        <Link to={`/deleteCustomers/${customer._id}`}>
+                          <Trash2
+                            size={44}
+                            className="bg-[#eb2525] text-white p-2 rounded-full hover:bg-red-700 transition-all cursor-pointer"
+                          />
+                        </Link>
                         <Link to={`${customer._id}`}>
                           {" "}
                           <Eye
-                            size={54}
+                            size={44}
                             className="bg-[#2563eb] text-white p-2 rounded-full hover:bg-blue-700 transition-all cursor-pointer"
                           />
                         </Link>
