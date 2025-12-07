@@ -4,6 +4,8 @@ import axios from "axios";
 import AddItemCard from "../components/AddItemCard";
 import { formatCurrency } from "../utils/format";
 import { toast } from "react-hot-toast";
+import NavigationBar from "../components/NavigationBar";
+import Goback from "../components/Goback";
 
 const AddUtangPage = () => {
   const [customers, setCustomer] = useState([]);
@@ -96,8 +98,9 @@ const AddUtangPage = () => {
         );
 
   return (
-    <div className="bg-gray-100 font-poppins">
+    <div className="bg-gray-100 font-poppins pb-20">
       <div className="w-full max-w-md mx-auto p-4 sm:p-6 min-h-screen pb-24">
+        <Goback />
         <div className="text-center mb-6 pt-4">
           <h1 className="text-3xl font-bold text-[#831843]">Add Utang</h1>
           <p className="text-gray-600 text-md">Record new items (Unpaid)</p>
@@ -210,6 +213,7 @@ const AddUtangPage = () => {
           </button>
         </div>
       </div>
+      <NavigationBar />
     </div>
   );
 };

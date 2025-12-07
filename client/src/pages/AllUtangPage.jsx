@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../utils/format";
+import NavigationBar from "../components/NavigationBar";
+import Goback from "../components/Goback";
 
 const AllUtangPage = () => {
   const [data, setData] = useState([]);
@@ -44,8 +46,9 @@ const AllUtangPage = () => {
   console.log(filteredData);
 
   return (
-    <div className="bg-gray-100 font-poppins">
+    <div className="bg-gray-100 font-poppins pb-20">
       <div className="w-full max-w-md mx-auto p-4 sm:p-6 min-h-screen">
+        <Goback />
         <div className="text-center mb-6 pt-4">
           <h1 className="text-3xl font-bold text-[#831843]">All Utangs</h1>
           <p className="text-gray-600 text-md">
@@ -147,6 +150,7 @@ const AllUtangPage = () => {
             );
           })}
       </div>
+      <NavigationBar />
     </div>
   );
 };

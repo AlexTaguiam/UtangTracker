@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router";
 import { formatCurrency } from "../utils/format";
 import { toast } from "react-hot-toast";
+import Goback from "../components/Goback";
 
 const PaymentPage = () => {
   const [data, setData] = useState([]);
@@ -68,6 +69,7 @@ const PaymentPage = () => {
     <div className="bg-gray-100 min-h-screen pb-10">
       <div className="w-full max-w-md mx-auto p-4 sm:p-6">
         <div className="text-center mb-6 pt-4">
+          <Goback />
           <h1 className="text-2xl font-bold text-sari-maroon">
             Process Payment
           </h1>

@@ -3,6 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import { ClipboardClock } from "lucide-react";
 import axios from "axios";
 import { formatCurrency } from "../utils/format";
+import NavigationBar from "../components/NavigationBar";
+import Goback from "../components/Goback";
 
 const CustomerDetailPage = () => {
   const { id } = useParams();
@@ -27,8 +29,9 @@ const CustomerDetailPage = () => {
 
   {
     return (
-      <div className="bg-gray-100 font-poppins relative">
+      <div className="bg-gray-100 font-poppins relative pb-15">
         <div className="w-full max-w-md mx-auto p-4 sm:p-6 min-h-screen pb-24">
+          <Goback />
           <div className="text-center mb-6 pt-4">
             <h1 id="customerName" className="text-3xl font-bold text-[#831843]">
               {data.name || " No records found"}
@@ -247,6 +250,7 @@ const CustomerDetailPage = () => {
             </div>
           )}
         </div>
+        <NavigationBar />
       </div>
     );
   }
