@@ -18,7 +18,15 @@ const NavigationBar = () => {
         "
       >
         {/* Left: Home */}
-        <Link to={"/"} className="text-2xl text-gray-400 drop-shadow-sm">
+        <Link
+          to={"/"}
+          className="
+            text-2xl text-gray-400 drop-shadow-sm
+            transition duration-300
+            hover:text-pink-400 hover:drop-shadow-[0_0_10px_rgba(255,0,150,0.8)]
+            active:animate-ping
+          "
+        >
           <House size={34} />
         </Link>
 
@@ -26,9 +34,11 @@ const NavigationBar = () => {
         <Link
           to={"/addCustomer"}
           className="
-            text-3xl
-            text-gray-400
-"
+            text-3xl text-gray-400
+            transition duration-300
+            hover:text-pink-400 hover:drop-shadow-[0_0_15px_rgba(255,0,150,0.9)]
+            active:animate-ping
+          "
         >
           <CirclePlus size={54} />
         </Link>
@@ -36,7 +46,12 @@ const NavigationBar = () => {
         {/* Right: Customers */}
         <Link
           to={"/allUtang"}
-          className="text-2xl text-gray-400 drop-shadow-sm"
+          className="
+            text-2xl text-gray-400 drop-shadow-sm
+            transition duration-300
+            hover:text-pink-400 hover:drop-shadow-[0_0_10px_rgba(255,0,150,0.8)]
+            active:animate-ping
+          "
         >
           <Users size={34} />
         </Link>
