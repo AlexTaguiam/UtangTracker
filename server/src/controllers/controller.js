@@ -87,7 +87,6 @@ export const getAllCustomers = async (_, res) => {
           remainingBalance: {
             $sum: "$history.remainingBalance",
           },
-
           lastDate: { $max: "$history.date" },
         },
       },
@@ -102,6 +101,9 @@ export const getAllCustomers = async (_, res) => {
           remainingBalance: 1,
           lastDate: 1,
         },
+      },
+      {
+        $sort: { lastDate: -1 },
       },
     ]);
 
@@ -161,7 +163,12 @@ export const getSingleCustomer = async (req, res) => {
           name: 1,
           customerTotalPaid: 1,
           customerTotalUnpaid: 1,
-          history: 1,
+          history: {
+            $sortArray: {
+              input: "$history",
+              sortBy: { date: -1 },
+            },
+          },
         },
       },
     ];
@@ -202,7 +209,7 @@ export const addCustomer = async (req, res) => {
 
     const totalAmount = productsWithTotal.reduce(
       (sum, item) => sum + item.total,
-      0
+      0,
     );
 
     const paidAmount = 0;
@@ -286,7 +293,7 @@ export const utangPayment = async (req, res) => {
         $set: {
           "history.$.status": newStatus,
         },
-      }
+      },
     );
 
     if (updateResult.modifiedCount === 0) {
@@ -334,7 +341,7 @@ export const deleteUtang = async (req, res) => {
 
     const result = await Customer.updateOne(
       { _id: customerId },
-      { $pull: { history: { _id: utangId } } }
+      { $pull: { history: { _id: utangId } } },
     );
 
     if (result.matchedCount === 0) {
@@ -404,13 +411,15 @@ export const getAllCustomersUtang = async (req, res) => {
   try {
     const customers = await Customer.aggregate([
       {
+        $sort: { createdAt: -1 },
+      },
+      {
         $project: {
           _id: 1,
           name: 1,
           history: 1,
         },
       },
-
       {
         $addFields: {
           compiledHistory: {
@@ -428,6 +437,16 @@ export const getAllCustomersUtang = async (req, res) => {
             },
           },
         },
+      },
+      {
+        $addFields: {
+          compiledHistory: {
+            $sortArray: { input: "$compiledHistory", sortBy: { date: -1 } },
+          },
+        },
+      },
+      {
+        $sort: { "compiledHistory.0.date": -1 },
       },
     ]);
 
