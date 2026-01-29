@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { formatCurrency } from "../utils/format";
 import NavigationBar from "../components/NavigationBar";
 import Goback from "../components/Goback";
+import api from "../services/api";
 
 const AllCustomersPage = () => {
   const [data, setData] = useState([]);
@@ -14,10 +15,10 @@ const AllCustomersPage = () => {
   useEffect(() => {
     const getCustomer = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/customers");
-        console.log("API Response:", response.data);
-        setData(response.data.formatted);
-        setFilteredData(response.data.formatted);
+        const response = await api.get("/customers");
+        console.log("API Response:", response);
+        setData(response);
+        setFilteredData(response);
       } catch (error) {
         console.log("Error in getting Customer", error.message);
       }

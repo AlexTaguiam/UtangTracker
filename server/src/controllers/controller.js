@@ -1,6 +1,7 @@
 import customer from "../models/customer.js";
 import Customer from "../models/customer.js";
 import mongoose from "mongoose";
+import { sendResponse } from "../utils/responseHandler.js";
 //Load the Dashboard
 export const getDashboard = async (_, res) => {
   try {
@@ -35,14 +36,29 @@ export const getDashboard = async (_, res) => {
 
     const stats = statsResult[0] || { totalPaid: 0, totalUnpaid: 0 };
 
-    res.status(200).json({
+    const statsData = {
       totalCustomer,
       totalPaid: stats.totalPaid,
       totalUnpaid: stats.totalUnpaid,
-    });
+    };
+
+    // res.status(200).json({
+    //   totalCustomer,
+    //   totalPaid: stats.totalPaid,
+    //   totalUnpaid: stats.totalUnpaid,
+    // });
+
+    return sendResponse(
+      res,
+      200,
+      "Customer data retrieved successfully",
+      statsData,
+    );
   } catch (error) {
-    console.error("Dashboard error:", error);
-    res.status(500).json({ message: "Server Error" });
+    // console.error("Dashboard error:", error);
+    // res.status(500).json({ message: "Server Error" });
+
+    return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
 
@@ -107,9 +123,17 @@ export const getAllCustomers = async (_, res) => {
       },
     ]);
 
-    res.status(200).json({ formatted: formattedCustomers });
+    // res.status(200).json({ formatted: formattedCustomers });
+
+    return sendResponse(
+      res,
+      200,
+      "All Customer data retrieved successfully",
+      formattedCustomers,
+    );
   } catch (error) {
-    res.status(500).json({ error: "Server error" + error.message });
+    // res.status(500).json({ error: "Server error" + error.message });
+    return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
 

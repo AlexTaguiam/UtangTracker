@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import RateLimitedUI from "../components/RateLimitedUI";
 import { formatCurrency } from "../utils/format";
 import NavigationBar from "../components/NavigationBar";
+import api from "../services/api";
 
 const DashBoardPage = () => {
   const [data, setData] = useState({});
@@ -26,19 +27,21 @@ const DashBoardPage = () => {
       setIsRateLimited(false);
       setIsLoading(false);
       try {
-        const response = await axios.get(`http://localhost:3000/api/dashboard`);
-        setData(response.data);
+        const response = await api.get("/dashboard");
+        console.log(response);
+        setData(response);
       } catch (error) {
         console.log("Error in fetching dashboard", error.message);
         if (error.status === 429) {
           setIsRateLimited(true);
-          setIsLoading(true);
+          setIsLoading(false);
         }
       }
     };
     fetchDashBoard();
   }, [isRefresh]);
 
+  console.log(data);
   const handleRetry = () => {
     setIsRefresh(!isRefresh);
   };
