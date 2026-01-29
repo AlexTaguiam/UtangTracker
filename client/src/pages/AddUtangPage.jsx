@@ -6,6 +6,7 @@ import { formatCurrency } from "../utils/format";
 import { toast } from "react-hot-toast";
 import NavigationBar from "../components/NavigationBar";
 import Goback from "../components/Goback";
+import api from "../services/api";
 
 const AddUtangPage = () => {
   const [customers, setCustomer] = useState([]);
@@ -31,8 +32,8 @@ const AddUtangPage = () => {
   const handleCardData = (id, newCardData) => {
     setCardData((prevCardData) =>
       prevCardData.map((card) =>
-        card.id === id ? { ...card, ...newCardData } : card
-      )
+        card.id === id ? { ...card, ...newCardData } : card,
+      ),
     );
   };
 
@@ -52,8 +53,10 @@ const AddUtangPage = () => {
   useEffect(() => {
     const getCustomersName = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/customers`);
-        const names = response.data.formatted?.map((c) => c.name) || [];
+        const response = await api.get("/customers");
+        console.log(response);
+        const names = response || [];
+        console.log(names);
         setCustomer(names);
       } catch (error) {
         console.error("Error in fething customers name", error);
@@ -72,13 +75,13 @@ const AddUtangPage = () => {
         return console.log("Invalid inputs — please review and resubmit");
       }
 
-      const response = await axios.post(`http://localhost:3000/api/customers`, {
+      const response = await api.post("/customers", {
         name: selectedCustomer,
         products: products,
       });
       console.log(
         `Products is successfully added to ${selectedCustomer}`,
-        response.data
+        response.data,
       );
       toast.success("“We have got it! Your submission has been saved.”");
       setCardData([]);
@@ -94,7 +97,7 @@ const AddUtangPage = () => {
     query === ""
       ? customers
       : customers.filter((customer) =>
-          customer.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+          customer.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
         );
 
   return (

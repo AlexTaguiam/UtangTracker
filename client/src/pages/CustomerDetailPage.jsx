@@ -5,6 +5,7 @@ import axios from "axios";
 import { formatCurrency } from "../utils/format";
 import NavigationBar from "../components/NavigationBar";
 import Goback from "../components/Goback";
+import api from "../services/api";
 
 const CustomerDetailPage = () => {
   const { id } = useParams();
@@ -13,11 +14,9 @@ const CustomerDetailPage = () => {
     const getCustomerDetail = async () => {
       try {
         console.log("ID:", id);
-        const response = await axios.get(
-          `http://localhost:3000/api/customers/${id}`
-        );
-        console.log("API Response:", response.data);
-        setData(response.data);
+        const response = await api.get(`/customers/${id}`);
+        console.log("API Response:", response);
+        setData(response);
       } catch (error) {
         console.error("Error in Customer Detail Page", error);
       }
@@ -112,7 +111,7 @@ const CustomerDetailPage = () => {
                                 year: "numeric",
                                 month: "long",
                                 day: "numeric",
-                              }
+                              },
                             )
                           : "No date available"}
                       </div>
@@ -120,7 +119,7 @@ const CustomerDetailPage = () => {
                         <p>
                           {customerHistory?.date
                             ? new Date(
-                                customerHistory?.date
+                                customerHistory?.date,
                               ).toLocaleTimeString("en-US", {
                                 hour: "2-digit",
                                 minute: "2-digit",

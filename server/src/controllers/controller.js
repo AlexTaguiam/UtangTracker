@@ -200,12 +200,20 @@ export const getSingleCustomer = async (req, res) => {
     const customerData = await Customer.aggregate(pipeline);
 
     if (customerData.length === 0) {
-      return res.status(404).json({ error: "Customer not found" });
+      // return res.status(404).json({ error: "Customer not found" });
+      sendResponse(res, 404, `Customer not found: ${error.message}`);
     }
 
-    res.status(200).json(customerData[0]);
+    // res.status(200).json(customerData[0]);
+    sendResponse(
+      res,
+      200,
+      "Single Customer retrieved successfully",
+      customerData[0],
+    );
   } catch (error) {
-    res.status(500).json({ error: "Server error" + error.message });
+    // res.status(500).json({ error: "Server error" + error.message });
+    return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
 
@@ -259,21 +267,36 @@ export const addCustomer = async (req, res) => {
       });
 
       await customer.save();
-      return res.status(201).json({
-        message: "New customer created + utang added!",
+      // return res.status(201).json({
+      //   message: "New customer created + utang added!",
+      //   customer,
+      // });
+
+      return sendResponse(
+        res,
+        201,
+        "New customer created + utang added!",
         customer,
-      });
+      );
     }
 
     customer.history.push(newUtang);
     await customer.save();
 
-    res.status(200).json({
-      message: "Utang added to existing customer!",
+    // res.status(200).json({
+    //   message: "Utang added to existing customer!",
+    //   customer,
+    // });
+
+    return sendResponse(
+      res,
+      200,
+      "Utang added to existing customer!",
       customer,
-    });
+    );
   } catch (error) {
-    res.status(500).json({ error: "Server error " + error.message });
+    // res.status(500).json({ error: "Server error " + error.message });
+    return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
 
