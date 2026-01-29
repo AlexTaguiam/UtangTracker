@@ -55,11 +55,11 @@ const AddUtangPage = () => {
       try {
         const response = await api.get("/customers");
         console.log(response);
-        const names = response || [];
+        const names = response.map((c) => c.name);
         console.log(names);
         setCustomer(names);
       } catch (error) {
-        console.error("Error in fething customers name", error);
+        console.error("Error in fetching customers name", error);
       }
     };
     getCustomersName();

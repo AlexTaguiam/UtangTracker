@@ -221,16 +221,19 @@ export const getSingleCustomer = async (req, res) => {
 export const addCustomer = async (req, res) => {
   try {
     const { name, products } = req.body;
+    const normalizedName = name.trim();
 
     if (!name || !Array.isArray(products) || products.length === 0) {
-      return res.status(400).json({ error: "Name and products are required" });
+      return sendResponse(res, 400, `Name and products are required`);
     }
 
     for (const item of products) {
       if (!item.product || !item.quantity || !item.price) {
-        return res.status(400).json({
-          error: "Each product must include product name, quantity and price",
-        });
+        return sendResponse(
+          res,
+          400,
+          `Each product must include product name, quantity and price`,
+        );
       }
     }
 
@@ -257,20 +260,19 @@ export const addCustomer = async (req, res) => {
       date: new Date(),
     };
 
-    let customer = await Customer.findOne({ name });
+    // let customer = await Customer.findOne({ name });
+    let customer = await Customer.findOne({
+      name: { $regex: new RegExp(`^${normalizedName}$`, "i") },
+    });
 
     //Add the customer if it doesnt exist yet
     if (!customer) {
       customer = new Customer({
-        name,
+        name: normalizedName,
         history: [newUtang],
       });
 
       await customer.save();
-      // return res.status(201).json({
-      //   message: "New customer created + utang added!",
-      //   customer,
-      // });
 
       return sendResponse(
         res,
@@ -283,11 +285,6 @@ export const addCustomer = async (req, res) => {
     customer.history.push(newUtang);
     await customer.save();
 
-    // res.status(200).json({
-    //   message: "Utang added to existing customer!",
-    //   customer,
-    // });
-
     return sendResponse(
       res,
       200,
@@ -295,7 +292,6 @@ export const addCustomer = async (req, res) => {
       customer,
     );
   } catch (error) {
-    // res.status(500).json({ error: "Server error " + error.message });
     return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
