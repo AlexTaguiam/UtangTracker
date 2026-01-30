@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router";
 import { formatCurrency } from "../utils/format";
 import { toast } from "react-hot-toast";
 import Goback from "../components/Goback";
+import api from "../services/api";
 
 const PaymentPage = () => {
   const [data, setData] = useState([]);
@@ -15,9 +16,7 @@ const PaymentPage = () => {
   useEffect(() => {
     const getPaymentCustomerDetails = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/transaction/${id}/${paymentId}`
-        );
+        const response = await api.get(`/transaction/${id}/${paymentId}`);
         setData(response.data);
       } catch (error) {
         console.log("Error fetching in payment page", error);
@@ -49,11 +48,11 @@ const PaymentPage = () => {
         return console.log("Invalid Amount");
       }
       const amountTobePaid = Number(amount);
-      const response = await axios.put(
-        `http://localhost:3000/api/customers/${id}/utang/${paymentId}/details`,
+      const response = await api.put(
+        `/customers/${id}/utang/${paymentId}/details`,
         {
           paidAmount: amountTobePaid,
-        }
+        },
       );
       setTriggerRender(!triggerRender);
       setAmount(0);
@@ -115,7 +114,7 @@ const PaymentPage = () => {
                               year: "numeric",
                               month: "long",
                               day: "numeric",
-                            }
+                            },
                           )
                         : "No date available"}
                     </span>
@@ -269,7 +268,7 @@ const PaymentPage = () => {
                   ) : (
                     amount &&
                     formatCurrency(
-                      data?.transactions?.remainingBalance - amount
+                      data?.transactions?.remainingBalance - amount,
                     )
                   )}
                 </span>

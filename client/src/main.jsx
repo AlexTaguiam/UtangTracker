@@ -4,12 +4,15 @@ import { BrowserRouter } from "react-router";
 import { Toaster } from "react-hot-toast";
 import "./index.css";
 import App from "./App.jsx";
+import { UtangContextProvider } from "./context/UtangContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
-      <Toaster />
+      <UtangContextProvider>
+        <App />
+        <Toaster />
+      </UtangContextProvider>
     </BrowserRouter>
-  </StrictMode>
+  </StrictMode>,
 );

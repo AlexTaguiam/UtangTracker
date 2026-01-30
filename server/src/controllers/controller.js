@@ -303,21 +303,25 @@ export const utangPayment = async (req, res) => {
     const paidAmountNum = parseFloat(paidAmount);
 
     if (isNaN(paidAmountNum) || paidAmountNum <= 0) {
-      return res.status(400).json({ message: "Invalid paidAmount" });
+      return sendResponse(res, 400, "Please enter a valid payment amount");
     }
 
     const customer = await Customer.findById(customerId);
     if (!customer) {
-      return res.status(404).json({ message: "Customer not found" });
+      return sendResponse(res, 404, "Customer not found");
     }
 
     const utangRecord = customer.history.id(utangId);
     if (!utangRecord) {
-      return res.status(404).json({ message: "Utang record not found" });
+      return sendResponse(res, 404, "Utang record not found");
     }
 
     if (paidAmountNum > utangRecord.remainingBalance) {
-      return res.status(400).json({ message: "Payment exceeds balance" });
+      return sendResponse(
+        res,
+        400,
+        `Payment exceeds balance. Remaining: ${utangRecord.remainingBalance}`,
+      );
     }
 
     const newRemaining = utangRecord.remainingBalance - paidAmountNum;
@@ -340,9 +344,7 @@ export const utangPayment = async (req, res) => {
     );
 
     if (updateResult.modifiedCount === 0) {
-      return res
-        .status(500)
-        .json({ message: "Update failed or record changed." });
+      return sendResponse(res, 500, "Update failed or record changed");
     }
 
     const updatedCustomer = await Customer.findById(customerId);
@@ -351,8 +353,10 @@ export const utangPayment = async (req, res) => {
     res.status(200).json({
       result: updatedUtang,
     });
+
+    return sendResponse(res, 200, "Successfully paid utang");
   } catch (error) {
-    res.status(500).json({ error: "Server error" + error.message });
+    return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
 
