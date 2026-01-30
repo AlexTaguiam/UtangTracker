@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ClipboardClock } from "lucide-react";
-import axios from "axios";
 import { formatCurrency } from "../utils/format";
 import NavigationBar from "../components/NavigationBar";
 import Goback from "../components/Goback";
 import api from "../services/api";
-
+import { useUtangContext } from "../hooks/useUtangContext";
 const CustomerDetailPage = () => {
+  const { customerData, dispatch } = useUtangContext();
   const { id } = useParams();
-  const [data, setData] = useState([]);
+  // const [customerData, setData] = useState([]);
   useEffect(() => {
     const getCustomerDetail = async () => {
       try {
         console.log("ID:", id);
         const response = await api.get(`/customers/${id}`);
         console.log("API Response:", response);
-        setData(response);
+        // setData(response);
+        dispatch({ type: "GETSINGLE_CUSTOMER", payload: response });
+        console.log("Global Variable:", customerData);
       } catch (error) {
         console.error("Error in Customer Detail Page", error);
       }
@@ -24,7 +26,7 @@ const CustomerDetailPage = () => {
     getCustomerDetail();
   }, [id]);
 
-  console.log(data);
+  console.log(customerData);
 
   {
     return (
@@ -33,7 +35,7 @@ const CustomerDetailPage = () => {
           <Goback />
           <div className="text-center mb-6 pt-4">
             <h1 id="customerName" className="text-3xl font-bold text-[#831843]">
-              {data.name || " No records found"}
+              {customerData.name || " No records found"}
             </h1>
             <p className="text-gray-600 text-md">Utang history and actions</p>
           </div>
@@ -59,7 +61,7 @@ const CustomerDetailPage = () => {
                 </p>
               </div>
               <p id="overallPaid" className="text-2xl font-bold">
-                {formatCurrency(data.customerTotalUnpaid)}
+                {formatCurrency(customerData.customerTotalUnpaid)}
               </p>
             </div>
 
@@ -84,7 +86,7 @@ const CustomerDetailPage = () => {
                 </p>
               </div>
               <p id="overallPaid" className="text-2xl font-bold">
-                {formatCurrency(data.customerTotalPaid)}
+                {formatCurrency(customerData.customerTotalPaid)}
               </p>
             </div>
           </div>
@@ -94,8 +96,8 @@ const CustomerDetailPage = () => {
             </h2>
           </div>
 
-          {data.history?.length > 0 ? (
-            data.history.map((customerHistory, index) => {
+          {customerData.history?.length > 0 ? (
+            customerData.history.map((customerHistory, index) => {
               return (
                 <div
                   key={customerHistory._id || index}

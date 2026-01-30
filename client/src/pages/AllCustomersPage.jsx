@@ -6,9 +6,11 @@ import { formatCurrency } from "../utils/format";
 import NavigationBar from "../components/NavigationBar";
 import Goback from "../components/Goback";
 import api from "../services/api";
+import { useUtangContext } from "../hooks/useUtangContext";
 
 const AllCustomersPage = () => {
-  const [data, setData] = useState([]);
+  const { formattedCustomer, dispatch } = useUtangContext();
+
   const [search, setSearch] = useState("");
   const [filteredData, setFilteredData] = useState([]);
 
@@ -17,7 +19,8 @@ const AllCustomersPage = () => {
       try {
         const response = await api.get("/customers");
         console.log("API Response:", response);
-        setData(response);
+        console.log("Global Variable", formattedCustomer);
+        dispatch({ type: "GETALL_CUSTOMERS", payload: response });
         setFilteredData(response);
       } catch (error) {
         console.log("Error in getting Customer", error.message);
@@ -31,11 +34,11 @@ const AllCustomersPage = () => {
     setSearch(value);
 
     if (!value) {
-      setFilteredData(data);
+      setFilteredData(formattedCustomer);
       return;
     }
 
-    const filtered = data.filter((customer) => {
+    const filtered = formattedCustomer.filter((customer) => {
       return customer.name.toLowerCase().includes(value);
     });
 
