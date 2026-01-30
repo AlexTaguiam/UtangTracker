@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { formatCurrency } from "../utils/format";
 import NavigationBar from "../components/NavigationBar";
 import Goback from "../components/Goback";
+import api from "../services/api";
 
 const AllUtangPage = () => {
   const [data, setData] = useState([]);
@@ -14,12 +15,10 @@ const AllUtangPage = () => {
   useEffect(() => {
     const getCustomer = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/api/allCustomersUtang"
-        );
-        console.log("API Response:", response.data);
-        setData(response.data.customers);
-        setFilteredData(response.data.customers);
+        const response = await api.get("/allCustomersUtang");
+        console.log("API Response:", response);
+        setData(response);
+        setFilteredData(response);
       } catch (error) {
         console.log("Error in getting Customer", error.message);
       }
@@ -84,7 +83,7 @@ const AllUtangPage = () => {
                     <p className="text-xs text-gray-500">
                       {customer?.compiledHistory[0]?.date
                         ? new Date(
-                            customer?.compiledHistory[0]?.date
+                            customer?.compiledHistory[0]?.date,
                           ).toLocaleDateString("en-US", {
                             year: "numeric",
                             month: "long",
@@ -127,8 +126,8 @@ const AllUtangPage = () => {
                       {formatCurrency(
                         customer?.compiledHistory.reduce(
                           (acc, curr) => acc + curr.paidAmount,
-                          0
-                        )
+                          0,
+                        ),
                       )}
                     </p>
                   </div>
@@ -140,8 +139,8 @@ const AllUtangPage = () => {
                       {formatCurrency(
                         customer?.compiledHistory.reduce(
                           (acc, curr) => acc + curr.remainingBalance,
-                          0
-                        )
+                          0,
+                        ),
                       )}
                     </p>
                   </div>

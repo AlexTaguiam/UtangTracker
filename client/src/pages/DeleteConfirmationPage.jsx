@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-hot-toast";
+import api from "../services/api";
 
 const DeleteConfirmationPage = () => {
   const { id } = useParams();
@@ -12,11 +12,10 @@ const DeleteConfirmationPage = () => {
 
   const deleteTransaction = async () => {
     try {
-      const response = await axios.delete(
-        `http://localhost:3000/api/customers/${id}/utang/${deleteId}`
-      );
+      const response = await api.delete(`/customers/${id}/utang/${deleteId}`);
       toast.success("Transaction Deleted Successfully");
-      setDeletedData(response.data);
+      setDeletedData(response);
+      console.log(deletedData);
       backToDetailPage("/customers/${id}");
     } catch (error) {
       toast.error("Transaction Deletion Failed");

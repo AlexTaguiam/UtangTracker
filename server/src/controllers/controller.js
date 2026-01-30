@@ -42,12 +42,6 @@ export const getDashboard = async (_, res) => {
       totalUnpaid: stats.totalUnpaid,
     };
 
-    // res.status(200).json({
-    //   totalCustomer,
-    //   totalPaid: stats.totalPaid,
-    //   totalUnpaid: stats.totalUnpaid,
-    // });
-
     return sendResponse(
       res,
       200,
@@ -55,9 +49,6 @@ export const getDashboard = async (_, res) => {
       statsData,
     );
   } catch (error) {
-    // console.error("Dashboard error:", error);
-    // res.status(500).json({ message: "Server Error" });
-
     return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
@@ -123,8 +114,6 @@ export const getAllCustomers = async (_, res) => {
       },
     ]);
 
-    // res.status(200).json({ formatted: formattedCustomers });
-
     return sendResponse(
       res,
       200,
@@ -132,7 +121,6 @@ export const getAllCustomers = async (_, res) => {
       formattedCustomers,
     );
   } catch (error) {
-    // res.status(500).json({ error: "Server error" + error.message });
     return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
@@ -200,11 +188,9 @@ export const getSingleCustomer = async (req, res) => {
     const customerData = await Customer.aggregate(pipeline);
 
     if (customerData.length === 0) {
-      // return res.status(404).json({ error: "Customer not found" });
       sendResponse(res, 404, `Customer not found: ${error.message}`);
     }
 
-    // res.status(200).json(customerData[0]);
     sendResponse(
       res,
       200,
@@ -212,7 +198,6 @@ export const getSingleCustomer = async (req, res) => {
       customerData[0],
     );
   } catch (error) {
-    // res.status(500).json({ error: "Server error" + error.message });
     return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
@@ -350,11 +335,7 @@ export const utangPayment = async (req, res) => {
     const updatedCustomer = await Customer.findById(customerId);
     const updatedUtang = updatedCustomer.history.id(utangId);
 
-    res.status(200).json({
-      result: updatedUtang,
-    });
-
-    return sendResponse(res, 200, "Successfully paid utang");
+    return sendResponse(res, 200, "Successfully paid utang", updatedUtang);
   } catch (error) {
     return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
@@ -369,15 +350,17 @@ export const deleteCustomer = async (req, res) => {
     const deletedCustomer = await Customer.findByIdAndDelete(customerId);
 
     if (!deletedCustomer) {
-      return res.status(404).json({ message: "Customer not found" });
+      return sendResponse(res, 404, "Customer not found");
     }
 
-    res.status(200).json({
-      message: `Customer with ${customerId} is succesfully deleted`,
-      deletedCustomer: deletedCustomer,
-    });
+    return sendResponse(
+      res,
+      200,
+      "Customer deleted successfully",
+      deletedCustomer,
+    );
   } catch (error) {
-    res.status(500).json({ error: "Server error" + error.message });
+    return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
 
@@ -392,15 +375,15 @@ export const deleteUtang = async (req, res) => {
     );
 
     if (result.matchedCount === 0) {
-      return res.status(404).json({ error: "Customer not found" });
+      return sendResponse(res, 404, "Customer not found");
     }
     if (result.modifiedCount === 0) {
-      return res.status(404).json({ error: "Utang record not found" });
+      return sendResponse(res, 404, "Record not found");
     }
 
-    res.status(200).json({ message: "utang deleted successfully" });
+    return sendResponse(res, 200, "Record Successfully Deleted ");
   } catch (error) {
-    res.status(500).json({ error: "Server error" + error.message });
+    return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
 
@@ -441,16 +424,20 @@ export const getSpecificTransaction = async (req, res) => {
     const result = await Customer.aggregate(pipeline);
 
     if (result.length === 0) {
-      return res.status(404).json({ error: "Transaction not found" });
+      return sendResponse(res, 404, "Transaction not found");
     }
 
     const singleTransaction = result[0];
 
-    res.status(200).json(singleTransaction);
+    return sendResponse(
+      res,
+      200,
+      "Transaction Retrieved Successfully",
+      singleTransaction,
+    );
   } catch (error) {
     console.error("Payment page transaction error:", error);
-
-    res.status(500).json({ error: "Server error: " + error.message });
+    return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };
 
@@ -496,11 +483,14 @@ export const getAllCustomersUtang = async (req, res) => {
         $sort: { "compiledHistory.0.date": -1 },
       },
     ]);
-
-    res.status(200).json({ customers });
+    return sendResponse(
+      res,
+      200,
+      "Successfully retrieved all customer records",
+      customers,
+    );
   } catch (error) {
     console.error("Get All Customers Utang error:", error);
-
-    res.status(500).json({ error: "Server error: " + error.message });
+    return sendResponse(res, 500, `Server Error: ${error.message}`);
   }
 };

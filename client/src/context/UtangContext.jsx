@@ -1,5 +1,4 @@
 import { useReducer } from "react";
-import { Children } from "react";
 import { createContext } from "react";
 
 export const UtangContext = createContext();
@@ -17,7 +16,7 @@ export const utangReducer = (state, action) => {
   }
 };
 
-export const UtangContextProvider = ({ Children }) => {
+export const UtangContextProvider = ({ children }) => {
   const initialState = {
     utang: null,
   };
@@ -26,7 +25,7 @@ export const UtangContextProvider = ({ Children }) => {
 
   return (
     <UtangContext.Provider value={{ state, dispatch }}>
-      {Children}
+      {children}
     </UtangContext.Provider>
   );
 };

@@ -1,18 +1,15 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import React from "react";
 import toast from "react-hot-toast";
-import axios from "axios";
+import api from "../services/api";
 
 const DeleteCustomerConfirmationPage = () => {
   const { id } = useParams();
   const backToCustomers = useNavigate();
   const handleDeleteCustomer = async () => {
     try {
-      const response = await axios.delete(
-        `http://localhost:3000/api/customers/${id}`
-      );
+      const response = await api.delete(`/customers/${id}`);
       toast.success("Customer successfully deleted");
-      console.log(response.data, "Successfully deleted");
+      console.log("Successfully deleted", response);
       backToCustomers("/customers");
     } catch (error) {
       console.error("Error  in deleting customer", error);

@@ -17,7 +17,7 @@ const PaymentPage = () => {
     const getPaymentCustomerDetails = async () => {
       try {
         const response = await api.get(`/transaction/${id}/${paymentId}`);
-        setData(response.data);
+        setData(response);
       } catch (error) {
         console.log("Error fetching in payment page", error);
       }
