@@ -20,6 +20,11 @@ export const utangReducer = (state, action) => {
         ...state,
         customerData: action.payload,
       };
+    case "ADDNEW_UTANG":
+      return {
+        ...state,
+        customers: [...state.customers, action.payload],
+      };
     default:
       return state;
   }
@@ -30,6 +35,7 @@ export const UtangContextProvider = ({ children }) => {
     statsData: {},
     formattedCustomer: [],
     customerData: {},
+    customers: [],
   };
 
   const [state, dispatch] = useReducer(utangReducer, initialState);

@@ -81,7 +81,7 @@ const AddUtangPage = () => {
       });
       console.log(
         `Products is successfully added to ${selectedCustomer}`,
-        response.data,
+        response,
       );
       toast.success("“We have got it! Your submission has been saved.”");
       setCardData([]);

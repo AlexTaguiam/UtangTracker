@@ -12,10 +12,11 @@ import { Link } from "react-router-dom";
 import RateLimitedUI from "../components/RateLimitedUI";
 import { formatCurrency } from "../utils/format";
 import api from "../services/api";
-import { useUtangContext } from "../hooks/useUtangContext";
+// import { useUtangContext } from "../hooks/useUtangContext";
 
 const DashBoardPage = () => {
-  const { statsData, dispatch } = useUtangContext();
+  // const { statsData: dashboard, dispatch } = useUtangContext();
+  const [dashboard, setDashboard] = useState({});
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [isRefresh, setIsRefresh] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +28,8 @@ const DashBoardPage = () => {
       try {
         const response = await api.get("/dashboard");
         console.log(response);
-        dispatch({ type: "GET_DASHBOARD", payload: response });
+        setDashboard(response);
+        // dispatch({ type: "GET_DASHBOARD", payload: response });
       } catch (error) {
         console.log("Error in fetching dashboard", error.message);
         if (error.status === 429) {
@@ -39,7 +41,7 @@ const DashBoardPage = () => {
     fetchDashBoard();
   }, [isRefresh]);
 
-  console.log(statsData);
+  console.log(dashboard);
   const handleRetry = () => {
     setIsRefresh(!isRefresh);
   };
@@ -79,7 +81,7 @@ const DashBoardPage = () => {
                     Please try again later.
                   </p>
                 )}
-                {statsData && <p>{statsData.totalCustomer}</p>}
+                {dashboard && <p>{dashboard.totalCustomer}</p>}
               </section>
             </div>
             <div className="bg-[#fee2e2] text-red-800 p-4 rounded-lg shadow-md flex flex-col items-center justify-center">
@@ -92,8 +94,8 @@ const DashBoardPage = () => {
                   <p className="text-red-600 text-sm font-semibold text-center">
                     Please try again later.
                   </p>
-                ) : statsData ? (
-                  <p>{formatCurrency(statsData.totalUnpaid)}</p>
+                ) : dashboard ? (
+                  <p>{formatCurrency(dashboard.totalUnpaid)}</p>
                 ) : (
                   <p>Loading...</p>
                 )}
@@ -113,8 +115,8 @@ const DashBoardPage = () => {
                     <p className="text-red-600 text-sm font-semibold text-center">
                       Please try again later.
                     </p>
-                  ) : statsData ? (
-                    <p>{formatCurrency(statsData.totalPaid)}</p>
+                  ) : dashboard ? (
+                    <p>{formatCurrency(dashboard.totalPaid)}</p>
                   ) : (
                     <p>Loading...</p>
                   )}

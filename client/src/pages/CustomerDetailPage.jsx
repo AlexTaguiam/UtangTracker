@@ -5,19 +5,19 @@ import { formatCurrency } from "../utils/format";
 import NavigationBar from "../components/NavigationBar";
 import Goback from "../components/Goback";
 import api from "../services/api";
-import { useUtangContext } from "../hooks/useUtangContext";
+// import { useUtangContext } from "../hooks/useUtangContext";
 const CustomerDetailPage = () => {
-  const { customerData, dispatch } = useUtangContext();
+  // const { customerData, dispatch } = useUtangContext();
   const { id } = useParams();
-  // const [customerData, setData] = useState([]);
+  const [customerData, setData] = useState([]);
   useEffect(() => {
     const getCustomerDetail = async () => {
       try {
         console.log("ID:", id);
         const response = await api.get(`/customers/${id}`);
         console.log("API Response:", response);
-        // setData(response);
-        dispatch({ type: "GETSINGLE_CUSTOMER", payload: response });
+        setData(response);
+        // dispatch({ type: "GETSINGLE_CUSTOMER", payload: response });
         console.log("Global Variable:", customerData);
       } catch (error) {
         console.error("Error in Customer Detail Page", error);

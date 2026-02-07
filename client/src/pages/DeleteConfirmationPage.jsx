@@ -16,7 +16,7 @@ const DeleteConfirmationPage = () => {
       toast.success("Transaction Deleted Successfully");
       setDeletedData(response);
       console.log(deletedData);
-      backToDetailPage("/customers/${id}");
+      backToDetailPage(`/customers/${id}`);
     } catch (error) {
       toast.error("Transaction Deletion Failed");
       console.error("Error in deleting transaction", error.message);
