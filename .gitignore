@@ -26,3 +26,26 @@ dist-ssr
 node_modules/
 .env
 .DS_Store
+
+# Firebase config files (mobile)
+google-services.json
+GoogleService-Info.plist
+
+# Local Firebase emulator data
+.firebase/
+firebase-debug.log
+
+# Environment variables (if you store Firebase keys here)
+.env
+.env.local
+.env.development
+.env.production
+
+# Build output
+/node_modules
+/.next
+/dist
+/build
+
+#Ignores service account for admin sdk
+serviceAccountKey.json
