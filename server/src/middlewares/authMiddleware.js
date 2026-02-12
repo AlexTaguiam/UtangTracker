@@ -1,5 +1,5 @@
-import { sendResponse } from "../utils/responseHandler";
-import admin from "../config/firebase";
+import { sendResponse } from "../utils/responseHandler.js";
+import admin from "../config/firebase.js";
 
 export const authenticateUser = async (req, res, next) => {
   const authHeader = req.headers.authrization;

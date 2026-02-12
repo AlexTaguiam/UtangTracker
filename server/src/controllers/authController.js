@@ -1,6 +1,6 @@
-import User from "../models/User";
-import admin from "../config/firebase";
-import { sendResponse } from "../utils/responseHandler";
+import User from "../models/User.js";
+import admin from "../config/firebase.js";
+import { sendResponse } from "../utils/responseHandler.js";
 
 export const syncUser = async (req, res) => {
   try {
