@@ -106,10 +106,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     try {
       setError(null);
-      await = signOut(auth);
+      await signOut(auth);
       setUserRole(null);
       console.log("User Logged out");
     } catch (error) {
