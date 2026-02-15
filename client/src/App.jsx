@@ -8,6 +8,7 @@ import AllUtangPage from "./pages/AllUtangPage";
 import DeleteConfirmationPage from "./pages/DeleteConfirmationPage";
 import PaymentPage from "./pages/PaymentPage";
 import DeleteCustomerConfirmationPage from "./pages/DeleteCustomerConfirmationPage";
+import LoginForm from "./pages/LoginPage";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           path="/customers/:id/payment/:paymentId"
           element={<PaymentPage />}
         />
+        <Route path="/login" element={<LoginForm />} />
       </Routes>
     </div>
   );

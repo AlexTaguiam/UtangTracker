@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const singinWithGoogle = async () => {
+  const signinWithGoogle = async () => {
     try {
       setError(null);
 
@@ -156,7 +156,7 @@ export const AuthProvider = ({ children }) => {
     fetchUserRole,
     signup,
     login,
-    singinWithGoogle,
+    signinWithGoogle,
     logout,
     getIdToken,
   };
