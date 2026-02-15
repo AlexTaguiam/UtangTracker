@@ -1,7 +1,25 @@
 import axios from "axios";
+import { auth } from "../config/firebase.js";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api", // Your backend URL
+  baseURL: process.env.VITE_APP_API_URL || "http://localhost:3000/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Request interceptor - adds token to every request
+api.interceptors.request.use(async (config) => {
+  const user = auth.currentUser;
+  if (user) {
+    try {
+      const token = await user.getIdToken();
+      config.headers.Authorization = `Bearer ${token}`;
+    } catch (error) {
+      console.error("Error in getting token:", error);
+    }
+  }
+  return config;
 });
 
 // The "Magic" Interceptor
