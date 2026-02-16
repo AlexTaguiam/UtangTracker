@@ -3,11 +3,13 @@ import Customer from "../models/customer.js";
 import mongoose from "mongoose";
 import { sendResponse } from "../utils/responseHandler.js";
 //Load the Dashboard
-export const getDashboard = async (_, res) => {
+export const getDashboard = async (req, res) => {
   try {
-    const totalCustomer = await Customer.countDocuments();
+    const { uid } = req.user;
+    const totalCustomer = await Customer.countDocuments({ firebaseUid: uid });
 
     const statsResult = await Customer.aggregate([
+      { $match: { firebaseUid: uid } },
       { $unwind: "$history" },
       {
         $group: {
@@ -54,9 +56,11 @@ export const getDashboard = async (_, res) => {
 };
 
 //Load all the Customer
-export const getAllCustomers = async (_, res) => {
+export const getAllCustomers = async (req, res) => {
   try {
+    const { uid } = req.user;
     const formattedCustomers = await Customer.aggregate([
+      { $match: { firebaseUid: uid } },
       {
         $unwind: {
           path: "$history",
@@ -127,11 +131,15 @@ export const getAllCustomers = async (_, res) => {
 
 export const getSingleCustomer = async (req, res) => {
   try {
+    const { uid } = req.user;
     const customerId = req.params.customerId;
 
     const pipeline = [
       {
-        $match: { _id: new mongoose.Types.ObjectId(customerId) },
+        $match: {
+          _id: new mongoose.Types.ObjectId(customerId),
+          firebaseUid: uid,
+        },
       },
 
       {
@@ -205,6 +213,7 @@ export const getSingleCustomer = async (req, res) => {
 //Add a new Customer
 export const addCustomer = async (req, res) => {
   try {
+    const { uid } = req.user;
     const { name, products } = req.body;
     const normalizedName = name.trim();
 
@@ -247,12 +256,14 @@ export const addCustomer = async (req, res) => {
 
     // let customer = await Customer.findOne({ name });
     let customer = await Customer.findOne({
+      firebaseUid: uid,
       name: { $regex: new RegExp(`^${normalizedName}$`, "i") },
     });
 
     //Add the customer if it doesnt exist yet
     if (!customer) {
       customer = new Customer({
+        firebaseUid: uid,
         name: normalizedName,
         history: [newUtang],
       });
@@ -283,6 +294,7 @@ export const addCustomer = async (req, res) => {
 
 export const utangPayment = async (req, res) => {
   try {
+    const { uid } = req.user;
     const { customerId, utangId } = req.params;
     const { paidAmount } = req.body;
     const paidAmountNum = parseFloat(paidAmount);
@@ -291,7 +303,10 @@ export const utangPayment = async (req, res) => {
       return sendResponse(res, 400, "Please enter a valid payment amount");
     }
 
-    const customer = await Customer.findById(customerId);
+    const customer = await Customer.findOne({
+      _id: customerId,
+      firebaseUid: uid,
+    });
     if (!customer) {
       return sendResponse(res, 404, "Customer not found");
     }
@@ -315,6 +330,7 @@ export const utangPayment = async (req, res) => {
     const updateResult = await Customer.updateOne(
       {
         _id: customerId,
+        firebaseUid: uid,
         "history._id": utangId,
       },
       {
@@ -344,10 +360,14 @@ export const utangPayment = async (req, res) => {
 //Delete a Customer
 export const deleteCustomer = async (req, res) => {
   try {
+    const { uid } = req.user;
     const customerId = req.params.customerId;
     console.log("Customer ID:", customerId);
 
-    const deletedCustomer = await Customer.findByIdAndDelete(customerId);
+    const deletedCustomer = await Customer.findOneAndDelete({
+      _id: customerId,
+      firebaseUid: uid,
+    });
 
     if (!deletedCustomer) {
       return sendResponse(res, 404, "Customer not found");
@@ -367,10 +387,11 @@ export const deleteCustomer = async (req, res) => {
 //Delete a utang based on a customer history
 export const deleteUtang = async (req, res) => {
   try {
+    const { uid } = req.user;
     const { customerId, utangId } = req.params;
 
     const result = await Customer.updateOne(
-      { _id: customerId },
+      { _id: customerId, firebaseUid: uid },
       { $pull: { history: { _id: utangId } } },
     );
 
@@ -389,11 +410,15 @@ export const deleteUtang = async (req, res) => {
 
 export const getSpecificTransaction = async (req, res) => {
   try {
+    const { uid } = req.user;
     const { customerId, historyId } = req.params;
 
     const pipeline = [
       {
-        $match: { _id: new mongoose.Types.ObjectId(customerId) },
+        $match: {
+          _id: new mongoose.Types.ObjectId(customerId),
+          firebaseUid: uid,
+        },
       },
       {
         $unwind: "$history",
@@ -443,7 +468,9 @@ export const getSpecificTransaction = async (req, res) => {
 
 export const getAllCustomersUtang = async (req, res) => {
   try {
+    const { uid } = req.user;
     const customers = await Customer.aggregate([
+      { $match: { firebaseUid: uid } },
       {
         $sort: { createdAt: -1 },
       },

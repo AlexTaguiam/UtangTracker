@@ -21,6 +21,11 @@ const transactionSchema = new mongoose.Schema({
 });
 
 const customerSchema = new mongoose.Schema({
+  firebaseUid: {
+    type: String,
+    required: true,
+    index: true,
+  },
   name: { type: String, required: true, unique: true },
   history: [transactionSchema],
 });

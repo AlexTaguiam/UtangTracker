@@ -10,8 +10,11 @@ import {
   getSpecificTransaction,
   getAllCustomersUtang,
 } from "../controllers/controller.js";
+import { authenticateUser } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
+
+router.use(authenticateUser);
 
 router.get("/dashboard", getDashboard);
 router.get("/transaction/:customerId/:historyId", getSpecificTransaction);
