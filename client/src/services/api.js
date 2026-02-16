@@ -11,9 +11,11 @@ const api = axios.create({
 // Request interceptor - adds token to every request
 api.interceptors.request.use(async (config) => {
   const user = auth.currentUser;
+  console.log(user);
   if (user) {
     try {
       const token = await user.getIdToken();
+      console.log(token);
       config.headers.Authorization = `Bearer ${token}`;
     } catch (error) {
       console.error("Error in getting token:", error);

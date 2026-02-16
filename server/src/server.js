@@ -24,8 +24,8 @@ app.use(
 app.use(apiLimiter);
 
 //Routes
+app.use("/api/auth", authRouter);
 app.use("/api", router);
-app.use("/api", authRouter);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

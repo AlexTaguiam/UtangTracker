@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
 
       return result;
     } catch (error) {
-      console.error("sigin error", error);
+      console.error("signin error", error);
       setError(error.message);
       throw error;
     }
@@ -63,6 +63,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setError(null);
+      console.log(email, password);
 
       const result = await signInWithEmailAndPassword(auth, email, password);
       console.log("User logged in successfull", result.user.uid);
@@ -121,7 +122,7 @@ export const AuthProvider = ({ children }) => {
 
   const getIdToken = async () => {
     if (currentUser) {
-      return await currentUser.getIdToken;
+      return await currentUser.getIdToken();
     }
     return null;
   };

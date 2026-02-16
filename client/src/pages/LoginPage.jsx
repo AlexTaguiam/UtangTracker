@@ -45,7 +45,7 @@ const AuthForm = () => {
     try {
       await signinWithGoogle();
       navigate("/");
-      console.log("Signedin With Google successfully");
+      console.log("Signed in With Google successfully");
     } catch (error) {
       console.log("Error SignIn With Google", error.message);
     } finally {
