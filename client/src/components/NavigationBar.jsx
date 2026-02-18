@@ -1,4 +1,4 @@
-import { Users, CirclePlus, House } from "lucide-react";
+import { Users, CirclePlus, House, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const NavigationBar = () => {
@@ -40,7 +40,7 @@ const NavigationBar = () => {
             active:animate-ping
           "
         >
-          <CirclePlus size={54} />
+          <CirclePlus size={34} />
         </Link>
 
         {/* Right: Customers */}
@@ -54,6 +54,18 @@ const NavigationBar = () => {
           "
         >
           <Users size={34} />
+        </Link>
+
+        <Link
+          to={"/settings"}
+          className="
+            text-2xl text-gray-400 drop-shadow-sm
+            transition duration-300
+            hover:text-pink-400 hover:drop-shadow-[0_0_10px_rgba(255,0,150,0.8)]
+            active:animate-ping
+          "
+        >
+          <Settings size={34} />
         </Link>
       </div>
     </nav>

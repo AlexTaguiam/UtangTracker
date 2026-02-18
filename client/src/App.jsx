@@ -11,6 +11,7 @@ import DeleteCustomerConfirmationPage from "./pages/DeleteCustomerConfirmationPa
 import LoginForm from "./pages/LoginPage";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import { Navigate } from "react-router-dom";
+import SetttingsPage from "./pages/SetttingsPage";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
             path="/customers/:id/payment/:paymentId"
             element={<PaymentPage />}
           />
+          <Route path="/settings" element={<SetttingsPage />} />
         </Route>
 
         {/* Catch-all */}
